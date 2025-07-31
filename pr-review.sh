@@ -82,5 +82,5 @@ review() {
   fi
 
   local prompt="$diff \n === \n $md_prompt"
-  echo "$prompt" | chatgpt
+  echo "$prompt" | chatgpt -q | mdless
 }
