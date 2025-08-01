@@ -20,7 +20,7 @@ install-deps() {
 	brew tap safetyculture/tap
 	brew tap kardolus/chatgpt-cli
 	brew install --cask macfuse	session-manager-plugin sublime-text	wombat
-	brew install awscli cairo chatgpt-cli clang-format expect ffmpeg fzf fzy gh giflib gifsicle git-delta go imagemagick jira-cli jpeg jq kcat libpng md5sha1sum mkcert mockery nvm pango pkg-config pwgen python@3.11 scli staticcheck terraform vips zsh-autosuggestions zsh-syntax-highlighting
+	brew install awscli cairo chatgpt-cli clang-format expect ffmpeg fzf fzy gh giflib gifsicle git-delta go imagemagick jira-cli jpeg jq kcat libpng md5sha1sum mkcert mockery nvm pango pkg-config pwgen python@3.11 scli staticcheck terraform vips zsh-autosuggestions zsh-syntax-highlighting mdless
 }
 
 set-kubeconf() {

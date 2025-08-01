@@ -62,14 +62,33 @@ function rr() {
 }
 
 # AI-powered PR review
-# Usage: review (uses clipboard content)
+# Usage: review [-c] (uses clipboard content, -c to leave comment)
 review() {
-  local pr_url="$(pbpaste)"
-  local md_prompt="$(cat "${PROMPTS_DIR}/analyze_pull-request.md")"
+  local leave_comment=false
+  local pr_url
+  local md_prompt
+  
+  # Parse flags
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -c|--comment)
+        leave_comment=true
+        shift
+        ;;
+      *)
+        echo -e "${RED}ERROR: Unknown flag $1${RESET}"
+        echo "Usage: review [-c] (uses clipboard content, -c to leave comment)"
+        return 1
+        ;;
+    esac
+  done
+  
+  pr_url="$(pbpaste)"
+  md_prompt="$(cat "${PROMPTS_DIR}/analyze_pull-request.md")"
   
   if [[ -z "$pr_url" ]]; then
     echo -e "${RED}ERROR: No PR URL in clipboard${RESET}"
-    echo "Usage: Copy PR URL to clipboard and run review"
+    echo "Usage: Copy PR URL to clipboard and run review [-c]"
     return 1
   fi
 
@@ -82,5 +101,13 @@ review() {
   fi
 
   local prompt="$diff \n === \n $md_prompt"
-  echo "$prompt" | chatgpt -q | mdless
+  local review_output
+  review_output="$(echo "$prompt" | chatgpt -q)"
+  
+  if [[ "$leave_comment" == true ]]; then
+    echo "$review_output" | gh pr comment "$pr_url" --body-file -
+    echo -e "${GREEN}Review comment posted to PR${RESET}"
+  else
+    echo "$review_output" | mdless
+  fi
 }
