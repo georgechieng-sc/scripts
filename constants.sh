@@ -5,7 +5,7 @@
 # =============================================================================
 export readonly SAFETYCULTURE_DIR="$HOME/Desktop/safetyculture"
 export readonly SCRIPTS_DIR="$HOME/Desktop/safetyculture/scripts"
-export readonly PROMPTS_DIR="$HOME/Desktop/prompts"
+export readonly PROMPTS_DIR="$HOME/Desktop/safetyculture/scripts/prompts"
 export readonly JIRA_FILE_PREFIX="jira_"
 
 # =============================================================================

@@ -194,3 +194,78 @@ function gacp() {
     echo "pushing it to remote  ☁️ 🐙 ..."
     gp
 }
+
+# Analyze changed files for bugs using ChatGPT
+# Usage: bugs [-m]
+# -m: compare against main branch instead of HEAD
+function bugs() {
+    local use_main=false
+    
+    # Parse flags
+    if [[ "$1" == "-m" ]]; then
+        use_main=true
+        shift
+    fi
+    
+    echo -e "${BLUE}🔍 Analyzing changed files for potential bugs...${RESET}"
+    
+    # Check if chatgpt CLI is available
+    if ! command -v chatgpt >/dev/null 2>&1; then
+        echo -e "${RED}ERROR: chatgpt CLI is required but not installed${RESET}"
+        echo "Install it with: brew install chatgpt-cli"
+        return 1
+    fi
+    
+    # Get changed files based on flag
+    local all_files=""
+    if [[ "$use_main" == true ]]; then
+        # Compare against main branch
+        all_files="$(git diff --name-only $(git_main_branch))"
+        echo -e "${CYAN}Comparing against main branch: $(git_main_branch)${RESET}"
+    else
+        # Get all changed files (staged and unstaged)
+        local changed_files="$(git diff --name-only HEAD)"
+        local staged_files="$(git diff --cached --name-only)"
+        
+        # Combine and deduplicate files
+        all_files="$(echo -e "$changed_files\n$staged_files" | sort | uniq | grep -v '^$')"
+        echo -e "${CYAN}Analyzing working directory and staged changes${RESET}"
+    fi
+    
+    if [[ -z "$all_files" ]]; then
+        echo -e "${YELLOW}No changed files found${RESET}"
+        echo "Make sure you have changes in your working directory or staging area"
+        return 0
+    fi
+    
+    echo -e "${GREEN}Found changed files:${RESET}"
+    echo "$all_files" | sed 's/^/  - /'
+    echo ""
+    
+    # Concatenate all file contents
+    local file_contents=""
+    while IFS= read -r file; do
+        if [[ -f "$file" ]]; then
+            echo -e "${CYAN}Processing: $file${RESET}"
+            file_contents="$file_contents\n\n=== FILE: $file ===\n"
+            file_contents="$file_contents$(cat "$file")"
+        else
+            echo -e "${YELLOW}Warning: $file not found (might be deleted)${RESET}"
+        fi
+    done <<< "$all_files"
+    
+    if [[ -z "$file_contents" ]]; then
+        echo -e "${RED}ERROR: No file contents to analyze${RESET}"
+        return 1
+    fi
+    echo "$file_contents"
+    echo -e "${BLUE}🤖 Sending to ChatGPT for analysis...${RESET}"
+    
+    # Send to ChatGPT with the specific prompt
+    local analysis="$(echo -e "$file_contents" | chatgpt -q "Are there any bugs?")"
+    
+    echo -e "${GREEN}🔍 Bug Analysis Results:${RESET}"
+    echo "========================="
+    echo "$analysis"
+    echo "========================="
+}

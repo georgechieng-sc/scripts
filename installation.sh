@@ -20,7 +20,7 @@ install-deps() {
 	brew tap safetyculture/tap
 	brew tap kardolus/chatgpt-cli
 	brew install --cask macfuse	session-manager-plugin sublime-text	wombat docker
-	brew install awscli cairo chatgpt-cli clang-format docker kubectl expect ffmpeg fzf fzy gh giflib gifsicle git-delta go imagemagick jira-cli jpeg jq kcat libpng md5sha1sum mkcert mockery nvm pango pkg-config pwgen python@3.11 scli staticcheck terraform vips zsh-autosuggestions zsh-syntax-highlighting mdless
+	brew install awscli cairo chatgpt-cli clang-format docker kubectl expect ffmpeg fzf fzy gh giflib gifsicle git-delta go imagemagick jira-cli jpeg jq kcat libpng md5sha1sum mkcert mockery nvm pango pkg-config pwgen python@3.11 scli staticcheck terraform vips zsh-autosuggestions zsh-syntax-highlighting glow
 }
 
 set-kubeconf() {
@@ -52,4 +52,27 @@ npm() {
 	unset -f npm
 	load-nvm
 	npm "$@"
+}
+
+# =============================================================================
+# DOCKER FUNCTIONS
+# =============================================================================
+
+load-docker() {
+	if ! docker info >/dev/null 2>&1; then
+		open -a Docker
+		sleep 2
+	fi
+}
+
+docker() {
+	unset -f docker
+	load-docker
+	command docker "$@"
+}
+
+docker-compose() {
+	unset -f docker-compose
+	load-docker
+	command docker-compose "$@"
 }

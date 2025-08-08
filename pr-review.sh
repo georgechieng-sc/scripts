@@ -108,6 +108,6 @@ review() {
     echo "$review_output" | gh pr comment "$pr_url" --body-file -
     echo -e "${GREEN}Review comment posted to PR${RESET}"
   else
-    echo "$review_output" | mdless
+    echo "$review_output" | glow
   fi
 }
