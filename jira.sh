@@ -14,9 +14,9 @@ function sync_board() {
 	if [[ -n "$1" ]]; then
 		# Validate the provided board code
 		case "$1" in
-			"ATS"|"RESM") board="$1" ;;
+			"RESM") board="$1" ;;
 			*) 
-				echo "Invalid board code: $1. Valid options: ATS, RESM"
+				echo "Invalid board code: $1. Valid options: RESM"
 				return 1
 				;;
 		esac
@@ -36,11 +36,6 @@ function sync_board() {
 	
 	jira issue list -p "$board" -a$(jira me) -s~"Done" -s~"Won't Do" --plain --columns "KEY" --columns "SUMMARY" --no-headers -t~"Epic" > "${SCRIPTS_DIR}/${JIRA_FILE_PREFIX}${board_lower}.txt"
 	echo "sync done"
-}
-
-# Legacy wrapper functions for backward compatibility
-function ats() {
-	sync_board "ATS"
 }
 
 function resm() {

@@ -94,7 +94,7 @@ source {$HOME}/scripts/jira.sh
   - jbr() - Branch creation from JIRA tickets
   - mvj() - Ticket status management
   - jdiff() - AI-powered ticket creation
-  - Legacy wrappers (ats, resm)
+  - Legacy wrappers (resm)
 
 ### `repository.sh`
 - **Purpose**: Repository management functions

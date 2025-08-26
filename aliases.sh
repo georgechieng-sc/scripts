@@ -63,3 +63,5 @@ alias gfm='git fetch origin $(git_main_branch):$(git_main_branch)'
 alias gpe='git commit --allow-empty --allow-empty-message && git push'
 alias gbi='git checkout $(git branch | fzf | xargs)'
 alias gver='git checkout --theirs -- VERSION.txt'
+
+alias llm='chatgpt --set-model "$(chatgpt --list-models | fzf | sed "s/^- //")"'

@@ -23,6 +23,7 @@ function grc() {
 
 	if [[ -n "$repo" ]]; then
 		gh repo clone "$repo"
-		cd "$repo"
+		local repo_name="$(basename "$repo")"
+		cd "$repo_name"
 	fi
 }
