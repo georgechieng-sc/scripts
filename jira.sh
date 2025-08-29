@@ -300,4 +300,32 @@ jdiff() {
 	    jira issue move $ticket_number "In Progress"
         branch "$ticket_number"
     fi
+
+    if [ "$quiet_mode" = false ]; then
+        echo_color "${BLUE}Step 8: Committing changes to the new branch...${RESET}"
+    fi
+    if [ "$dry_run" = true ]; then
+        if [ "$quiet_mode" = false ]; then
+            echo_color "${YELLOW}Would commit changes using gacp -ai${RESET}"
+        fi
+    else
+        gacp -ai
+    fi
+    if [ "$quiet_mode" = false ]; then
+        echo_color "${GREEN}Changes committed to branch $ticket_number${RESET}"
+    fi
+
+    if [ "$quiet_mode" = false ]; then
+        echo_color "${BLUE}Step 9: Creating pull request...${RESET}"
+    fi
+    if [ "$dry_run" = true ]; then
+        if [ "$quiet_mode" = false ]; then
+            echo_color "${YELLOW}Would create pull request using pr -ai${RESET}"
+        fi
+    else
+        pr -ai
+    fi
+    if [ "$quiet_mode" = false ]; then
+        echo_color "${GREEN}Pull request created for branch $ticket_number${RESET}"
+    fi
 }

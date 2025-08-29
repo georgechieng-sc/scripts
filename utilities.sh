@@ -34,7 +34,7 @@ function select_board() {
 	# Get user selection
 	local choice board_code
 	while true; do
-		read -r "choice?Choose board (a/r): "
+		read -r "choice?Choose board (r): "
 		
 		board_code="${boards[$choice]}"
 		if [[ -n "$board_code" ]]; then
