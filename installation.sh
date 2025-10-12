@@ -88,3 +88,7 @@ docker-compose() {
 	load-docker
 	command docker-compose "$@"
 }
+
+chatgpt() {
+  command chatgpt --target litellm "$@"
+}

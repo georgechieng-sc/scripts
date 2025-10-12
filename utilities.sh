@@ -121,3 +121,17 @@ function sci() {
 	cd "$SAFETYCULTURE_DIR"
 	cdi
 }
+
+# Refresh LiteLLM API key if expired and export it
+# Usage: litellm
+function litellm() {
+  local litellm="$(cat ~/.scli/litellm.json)"
+  local expiry="$(echo $litellm | jq -r '.access_token.expires_at | fromdateiso8601')"
+  local today="$(date +%s)"
+
+  if [ $today -gt $expiry ]; then
+    scli litellm get-key
+    echo "Your LiteLLM API key has been refreshed."
+  fi
+  export LITELLM_API_KEY="$(cat ~/.scli/litellm.json | jq -r '.access_token.token')"
+}

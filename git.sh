@@ -50,7 +50,7 @@ function pr() {
         local diff="$(git diff $(git_main_branch))"
 
         # Use ChatGPT CLI to generate PR title and description
-        local pr_details="$(echo "$diff" | chatgpt "$prompt")"
+        local pr_details="$(echo "$diff" | chatgpt -q "$prompt")"
 
         # Extract title and body
         title="$(echo "$pr_details" | head -n 1)"

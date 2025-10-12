@@ -64,4 +64,8 @@ alias gpe='git commit --allow-empty --allow-empty-message && git push'
 alias gbi='git checkout $(git branch | fzf | xargs)'
 alias gver='git checkout --theirs -- VERSION.txt'
 
+# =============================================================================
+# ALIASES - CHATGPT
+# =============================================================================
+
 alias llm='chatgpt --set-model "$(chatgpt --list-models | fzf | sed "s/^- //")"'
