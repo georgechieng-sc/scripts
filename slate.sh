@@ -14,19 +14,6 @@
 #   slate_help
 # Optionally use wrapper: slate <command> [args]
 
-# Ensure required kubie context is active before slate operations.
-# This will attempt to enter the context each time; kubie should handle idempotency.
-slate_ensure_context() {
-  if ! command -v kubie >/dev/null 2>&1; then
-    echo "ERROR: kubie is required for slate operations" >&2
-    return 1
-  fi
-  echo "Ensuring kubie context: ${SLATE_DEV}"
-  kubie ctx "${SLATE_DEV}" || {
-    echo "ERROR: failed to switch kubie context to ${SLATE_DEV}" >&2
-    return 1
-  }
-}
 
 # Validate a JIRA ticket pattern (PROJECT-123)
 slate_validate_ticket() {
@@ -40,8 +27,6 @@ slate_up() {
   fi
   echo "Initializing slate tooling..."
   sc-slate
-  echo "Switching kubie context to ${SLATE_DEV}"
-  kubie ctx ${SLATE_DEV} || echo "WARN: kubie context switch failed"
 }
 
 slate_ls() {
@@ -76,13 +61,9 @@ slate_session() {
   fi
   echo "Initializing slate session for $ticket"
   scli slate create-slate --id "$ticket" 2>/dev/null || echo "(info) slate may already exist"
-  # Ensure we are inside a kubie context before switching namespace. Without this
-  # 'kubie ns' errors: "Not in a kubie shell!".
-  echo "Ensuring kubie context ${SLATE_DEV}"
-  kubie ctx ${SLATE_DEV} || echo "WARN: kubie context switch failed" >&2
   local ticket_ns="$(echo "$ticket" | tr '[:upper:]' '[:lower:]')"
-  echo "Switching kubie namespace to ${ticket_ns} (lowercased)"
-  kubie ns "${ticket_ns}" || echo "WARN: kubie namespace switch failed" >&2
+  echo "Switching namespace to ${ticket_ns} (kubectl)"
+  sc-change "${ticket_ns}" || echo "WARN: namespace switch failed" >&2
 }
 
 slate_extend() {
@@ -112,16 +93,42 @@ slate_delete() {
   scli slate delete-slate --id "$slate_id"
 }
 
+slate_tp() {
+  local ticket="$1"
+  local service="$2"
+  if [[ -z "$ticket" ]]; then
+    echo "Usage: slate tp <ticket-id> [service-name]" >&2
+    return 1
+  fi
+  [[ -z "$service" ]] && service="$(basename "$(pwd)")"
+  echo "Deploying '$service' to slate '$ticket'..."
+  scli slate deploy --slate "$ticket" --service "$service" || echo "(warn) deploy may have failed or already exists" >&2
+
+  echo "Starting telepresence intercept for service '$service'..."
+  tp "$service"
+}
+
+slate_tpa() {
+  local ticket="$(git_current_branch)"
+  local service="$(basename "$(pwd)")"
+  echo "Auto slate deploy/intercept: ticket=$ticket service=$service"
+
+  echo "Restarting telepresence session..."
+  telepresence quit -s >/dev/null 2>&1 || true
+  slate_tp "$ticket" "$service"
+}
+
 slate_help() {
   cat <<EOF
 Slate Functions:
-  slate up                       Initialize slate tooling + default kubie context
+  slate up                       Initialize slate tooling (kubectl context already set)
   slate ls                       List existing slates
   slate create <jira-ticket>     Create slate for JIRA ticket (e.g. RESM-123)
-  slate session <jira-ticket>    Ensure slate exists + switch kubie namespace
+  slate session <jira-ticket>    Ensure slate exists + switch namespace (kubectl)
   slate extend <slate-id> <days> Extend slate expiry (1-7 days)
   slate delete <slate-id>        Delete a slate
-  slate ctx                      Switch kubie context
+  slate tp <jira-ticket> [svc]   Deploy service to slate then intercept
+  slate tpa                      Auto ticket/service from branch + cwd; deploy + intercept
   slate help                     Show this help
 Wrapper:
   slate <command> [args]         Dispatch to above functions
@@ -131,11 +138,6 @@ EOF
 # Optional wrapper to mimic previous CLI style
 slate() {
   local command="$1"; shift || true
-  # Enforce kubie context before executing any non-help/context command
-  case "$command" in
-    ctx|help|--help|-h|"") ;; # skip ensure for these commands
-    *) slate_ensure_context || return 1 ;;
-  esac
   case "$command" in
     up)        slate_up "$@" ;;
     ls|list)   slate_ls "$@" ;;
@@ -143,7 +145,8 @@ slate() {
     session)   slate_session "$@" ;;
     extend)    slate_extend "$@" ;;
     delete|rm) slate_delete "$@" ;;
-    ctx)       kubie ctx "${SLATE_DEV}" ;;
+    tp)        slate_tp "$@" ;;
+    tpa)       slate_tpa "$@" ;;
     help|--help|-h|"") slate_help ;;
     *) echo "ERROR: Unknown command: $command" >&2; slate_help; return 1 ;;
   esac
