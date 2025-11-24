@@ -49,6 +49,9 @@ function select_board() {
 # Auto-teleport based on current folder name
 # Usage: tpa
 function tpa() {
+	echo "Restart telepresence..."
+	telepresence quit -s
+	
 	local repo="$(basename "$(pwd)")"
 
 	echo "teleporting to: $repo"

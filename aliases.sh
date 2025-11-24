@@ -32,6 +32,7 @@ alias hide="defaults write com.apple.Finder AppleShowAllFiles false && killall F
 
 alias sc-ns="echo $GETNAMESPACE"
 alias sc-auth="aws sso login --profile sc-development"
+alias sc-slate="aws sso login --profile development-sc001"
 alias sc-change="kubectl config set-context --current --namespace "
 alias tp="scli dev intercept "
 alias tidepods="kubectl get pods"
@@ -69,3 +70,5 @@ alias gver='git checkout --theirs -- VERSION.txt'
 # =============================================================================
 
 alias llm='chatgpt --set-model "$(chatgpt --list-models | fzf | sed "s/^- //")"'
+
+alias cors='open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security'

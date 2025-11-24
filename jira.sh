@@ -220,7 +220,7 @@ jdiff() {
     if [ "$dry_run" = true ]; then
         local chatgpt_output="Title: Sample Title\nDescription: This is a sample description."
     else
-        local chatgpt_output=$(echo "$git_diff" | chatgpt -q "Based on this git diff, generate a concise Jira ticket title (max 50 chars) and description (max 200 words). Format the output as 'Title: <title>\nDescription: <description>'")
+        local chatgpt_output=$(echo "$git_diff" | chatgpt -q "Based on this git diff, generate a concise Jira ticket title (max 50 chars) and description (max 200 words, do not use any formatting or bullet point just a paragraph will do). Format the output as 'Title: <title>\nDescription: <description>'")
     fi
     if [ "$quiet_mode" = false ]; then
         echo_color "${CYAN}ChatGPT output:${RESET}"

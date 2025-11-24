@@ -26,6 +26,9 @@ function branch() {
 	gl
 	echo "creating $branch  🐙 ..."
 	gcb $branch
+
+    echo "🔐 Initializing Slate session for $branch"
+    slate session "$branch"
 	echo "pushing it to remote  ☁️ 🐙 ..."
 	gpsup
 }

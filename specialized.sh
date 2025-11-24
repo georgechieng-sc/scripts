@@ -58,17 +58,40 @@ function ids12() {
 }
 
 # Generate password from seed
-# Usage: pw <input>
+# Usage: pw [-s] [input]
+# Options:
+#   -s    Echo only the seed value (input not required)
 function pw() {
-	if [[ -z "$1" ]]; then
-		echo -e "${RED}ERROR: Input required${RESET}"
-		echo "Usage: pw <input>"
-		return 1
-	fi
+	local seed_only=false
+	local OPTIND=1  # Reset OPTIND for each function call
+	
+	# Parse flags
+	while getopts "s" opt; do
+		case $opt in
+			s)
+				seed_only=true
+				;;
+			*)
+				echo "Usage: pw [-s] [input]"
+				return 1
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
 	
 	local sv="Yoog5ahpohThee0Ohk7ohSooquaivohj"
-	echo "Seed Value: $sv"
-	echo "$(echo -n "Yoog5ahpohThee0Ohk7ohSooquaivohj/$1" | md5sum | head -c 32)"
+	
+	if [[ $seed_only == true ]]; then
+		echo "$sv"
+	else
+		if [[ -z "$1" ]]; then
+			echo -e "${RED}ERROR: Input required${RESET}"
+			echo "Usage: pw [-s] [input]"
+			return 1
+		fi
+		echo "Seed Value: $sv"
+		echo "$(echo -n "Yoog5ahpohThee0Ohk7ohSooquaivohj/$1" | md5sum | head -c 32)"
+	fi
 }
 
 # Auto-generate SQL migration file

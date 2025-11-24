@@ -55,6 +55,7 @@ source_script "git.sh"              # Git workflow functions
 source_script "jira.sh"             # JIRA integration functions
 source_script "repository.sh"       # Repository management
 source_script "pr-review.sh"        # PR review workflow
+source_script "slate.sh"            # Slate management functions
 source_script "specialized.sh"      # Specialized utility functions
 
 if [[ "$VERBOSE" == "true" ]]; then
