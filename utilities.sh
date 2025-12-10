@@ -25,20 +25,50 @@ function select_board() {
 	typeset -A boards
 	boards=(
 		r "RESM"
+		p "PEOPLE"
 	)
 	
 	# Display options
 	echo "Available boards:" >&2
 	echo "  r: RESM board" >&2
+	echo "  p: PEOPLE board" >&2
 	
 	# Get user selection
 	local choice board_code
 	while true; do
-		read -r "choice?Choose board (r): "
+		read -r "choice?Choose board (r, p): "
 		
 		board_code="${boards[$choice]}"
 		if [[ -n "$board_code" ]]; then
 			echo "$board_code"
+			return 0
+		else
+			echo "Invalid choice. Please try again." >&2
+		fi
+	done
+}
+
+function select_component() {
+	# Define available components
+	typeset -A components
+	components=(
+		d "Documents"
+		h "Heads Up"
+	)
+	
+	# Display options
+	echo "Available components:" >&2
+	echo "  d: Documents" >&2
+	echo "  h: Heads Up" >&2
+	
+	# Get user selection
+	local choice component_code
+	while true; do
+		read -r "choice?Choose component (d, h): "
+		
+		component_code="${components[$choice]}"
+		if [[ -n "$component_code" ]]; then
+			echo "$component_code"
 			return 0
 		else
 			echo "Invalid choice. Please try again." >&2

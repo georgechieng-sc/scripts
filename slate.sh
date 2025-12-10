@@ -30,7 +30,7 @@ slate_up() {
 }
 
 slate_ls() {
-  scli slate view-slates
+  kubectl get slate
 }
 
 slate_create() {

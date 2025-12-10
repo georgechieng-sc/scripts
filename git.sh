@@ -117,6 +117,12 @@ function gbdi() {
 	if [[ -n "$branch" ]]; then
 		gbd $branch
 
+        echo "Do you want to delete the slate instance for $branch as well? [yn]"
+        local sdyn="$(yesno)"
+        if [[ $sdyn =~ ^[Yy]$ ]]; then
+            slate delete "$branch" || echo "WARN: slate delete failed" >&2
+        fi
+
 		echo "Do you want to move the JIRA ticket to Done as well? [yn]"
 		local yn="$(yesno)"
 		if [[ $yn =~ ^[Yy]$ ]]; then
