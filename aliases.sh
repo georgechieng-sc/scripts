@@ -35,7 +35,6 @@ alias sc-slns="echo $SLATE_GETNAMESPACE"
 alias sc-auth="aws sso login --profile sc-development"
 alias sc-slate="aws sso login --profile development-sc001"
 alias sc-change="kubectl config set-context --current --namespace "
-alias tp="scli dev intercept "
 alias tidepods="kubectl get pods"
 
 alias brewdep="brew deps --tree --installed"

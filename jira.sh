@@ -92,36 +92,8 @@ function mvj() {
 	local name="$(cat "${SCRIPTS_DIR}/${JIRA_FILE_PREFIX}${board_lower}.txt" | fzf --cycle --color=dark | cut -f1 | xargs)"
 	if [[ -n "$name" ]]; then
 		echo "moving JIRA ticket: $name"
-
-		echo "Move JIRA ticket to?"
-		echo "ip: In Progress"
-		echo "ir: In Review"
-        echo "cr: Code Review"
-		echo "d: Done"
-
-		read -r b
-		case "$b" in
-			"ip")
-				echo "moving JIRA issue to In Progress"
-				jira issue move "$name" "In Progress"
-				;;
-			"ir")
-				echo "moving JIRA issue to In Review"
-				jira issue move "$name" "In Review"
-				;;
-            "cr")
-                echo "moving JIRA issue to Code Review"
-                jira issue move "$name" "Code Review"
-                ;;
-			"d")
-				echo "moving JIRA issue to Done"
-				jira issue move "$name" "Done"
-				;;
-			*)
-				echo -e "${RED}ERROR: Invalid choice${RESET}"
-				return 1
-				;;
-		esac
+		local pr_status="$(select_status)"
+		jira issue move "$name" "$pr_status"
 	fi
 }
 

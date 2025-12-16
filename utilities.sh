@@ -76,17 +76,36 @@ function select_component() {
 	done
 }
 
-# Auto-teleport based on current folder name
-# Usage: tpa
-function tpa() {
-	echo "Restart telepresence..."
-	telepresence quit -s
+function select_status() {
+	# Define available statuses
+	typeset -A statuses
+	statuses=(
+		ir "In Review"
+		cr "Code Review"
+		ip "In Progress"
+		d "Done"
+	)
 	
-	local repo="$(basename "$(pwd)")"
-
-	echo "teleporting to: $repo"
-
-	tp $repo
+	# Display options
+	echo "Available statuses:" >&2
+	echo "  ir: In Review" >&2
+	echo "  cr: Code Review" >&2
+	echo "  ip: In Progress" >&2
+	echo "  d: Done" >&2
+	
+	# Get user selection
+	local choice status_code
+	while true; do
+		read -r "choice?Choose status (ir, cr, ip, d): "
+		
+		status_code="${statuses[$choice]}"
+		if [[ -n "$status_code" ]]; then
+			echo "$status_code"
+			return 0
+		else
+			echo "Invalid choice. Please try again." >&2
+		fi
+	done
 }
 
 # Clean up persistent ports

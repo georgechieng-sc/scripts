@@ -6,19 +6,13 @@
 # These functions mirror the prior CLI subcommands. Source this file to use:
 #   slate_up
 #   slate_ls
-#   slate_create <jira-ticket>
-#   slate_session <jira-ticket>
 #   slate_extend <slate-id> <days>
 #   slate_delete <slate-id>
-#   slate_ctx <kubie-context>
+#   slate_tp <jira-ticket> [service]
+#   slate_tpa
 #   slate_help
 # Optionally use wrapper: slate <command> [args]
 
-
-# Validate a JIRA ticket pattern (PROJECT-123)
-slate_validate_ticket() {
-  echo "$1" | grep -Eq '^[A-Z]+-[0-9]+$'
-}
 
 slate_up() {
   if ! command -v sc-slate >/dev/null 2>&1; then
@@ -31,39 +25,6 @@ slate_up() {
 
 slate_ls() {
   kubectl get slate
-}
-
-slate_create() {
-  local ticket="$1"
-  if [[ -z "$ticket" ]]; then
-    echo "ERROR: JIRA ticket ID required" >&2
-    echo "Usage: slate create <jira-ticket>" >&2
-    return 1
-  fi
-  if ! slate_validate_ticket "$ticket"; then
-    echo "ERROR: Invalid ticket format: $ticket" >&2
-    return 1
-  fi
-  echo "Creating slate for $ticket"
-  scli slate create-slate --id "$ticket" || echo "WARN: slate may already exist" >&2
-}
-
-slate_session() {
-  local ticket="$1"
-  if [[ -z "$ticket" ]]; then
-    echo "ERROR: JIRA ticket ID required" >&2
-    echo "Usage: slate session <jira-ticket>" >&2
-    return 1
-  fi
-  if ! slate_validate_ticket "$ticket"; then
-    echo "ERROR: Invalid ticket format: $ticket" >&2
-    return 1
-  fi
-  echo "Initializing slate session for $ticket"
-  scli slate create-slate --id "$ticket" 2>/dev/null || echo "(info) slate may already exist"
-  local ticket_ns="$(echo "$ticket" | tr '[:upper:]' '[:lower:]')"
-  echo "Switching namespace to ${ticket_ns} (kubectl)"
-  sc-change "${ticket_ns}" || echo "WARN: namespace switch failed" >&2
 }
 
 slate_extend() {
@@ -95,27 +56,22 @@ slate_delete() {
 
 slate_tp() {
   local ticket="$1"
-  local service="$2"
+  local service="${2:-$(basename "$(pwd)")}"
   if [[ -z "$ticket" ]]; then
-    echo "Usage: slate tp <ticket-id> [service-name]" >&2
+    echo "Usage: slate tp <ticket-id> [service]" >&2
     return 1
   fi
-  [[ -z "$service" ]] && service="$(basename "$(pwd)")"
-  echo "Deploying '$service' to slate '$ticket'..."
-  scli slate deploy --slate "$ticket" --service "$service" || echo "(warn) deploy may have failed or already exists" >&2
-
-  echo "Starting telepresence intercept for service '$service'..."
-  tp "$service"
+  
+  echo "quitting existing telepresence sessions..."
+  telepresence quit -s
+  scli dev intercept --slate-id "$ticket" "$service"
 }
 
 slate_tpa() {
   local ticket="$(git_current_branch)"
   local service="$(basename "$(pwd)")"
-  echo "Auto slate deploy/intercept: ticket=$ticket service=$service"
-
-  echo "Restarting telepresence session..."
-  telepresence quit -s >/dev/null 2>&1 || true
-  slate_tp "$ticket" "$service"
+  
+  scli dev intercept --slate-id "$ticket" "$service"
 }
 
 slate_help() {
@@ -123,11 +79,9 @@ slate_help() {
 Slate Functions:
   slate up                       Initialize slate tooling (kubectl context already set)
   slate ls                       List existing slates
-  slate create <jira-ticket>     Create slate for JIRA ticket (e.g. RESM-123)
-  slate session <jira-ticket>    Ensure slate exists + switch namespace (kubectl)
   slate extend <slate-id> <days> Extend slate expiry (1-7 days)
   slate delete <slate-id>        Delete a slate
-  slate tp <jira-ticket> [svc]   Deploy service to slate then intercept
+  slate tp <jira-ticket> [svc]   Create slate, deploy service, and intercept (uses scli dev intercept)
   slate tpa                      Auto ticket/service from branch + cwd; deploy + intercept
   slate help                     Show this help
 Wrapper:
@@ -141,8 +95,6 @@ slate() {
   case "$command" in
     up)        slate_up "$@" ;;
     ls|list)   slate_ls "$@" ;;
-    create)    slate_create "$@" ;;
-    session)   slate_session "$@" ;;
     extend)    slate_extend "$@" ;;
     delete|rm) slate_delete "$@" ;;
     tp)        slate_tp "$@" ;;

@@ -27,8 +27,6 @@ function branch() {
 	echo "creating $branch  🐙 ..."
 	gcb $branch
 
-    echo "🔐 Initializing Slate session for $branch"
-    slate session "$branch"
 	echo "pushing it to remote  ☁️ 🐙 ..."
 	gpsup
 }
@@ -95,8 +93,9 @@ function pr() {
     echo "Do you want to move the JIRA ticket to In Review as well? [yn]"
     local yn=$(yesno)
     if [[ $yn =~ ^[Yy]$ ]]; then
-        echo "moving JIRA issue to In-Review"
-        jira issue move $branch "In Review"
+        local pr_status=$(select_status)
+        echo "moving JIRA issue to ${pr_status}"
+        jira issue move $branch "$pr_status"
     fi
 
     echo "Do you want to move PR from draft to ready as well? [yn]"
