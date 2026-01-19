@@ -14,10 +14,9 @@ function sync_board() {
 	if [[ -n "$1" ]]; then
 		# Validate the provided board code
 		case "$1" in
-			"RESM") board="$1" ;;
 			"PEOPLE") board="$1" ;;
 			*) 
-				echo "Invalid board code: $1. Valid options: RESM, PEOPLE"
+				echo "Invalid board code: $1. Valid options: PEOPLE"
 				return 1
 				;;
     
@@ -38,10 +37,6 @@ function sync_board() {
 	
 	jira issue list -p "$board" -a$(jira me) -s~"Done" -s~"Won't Do" --plain --columns "KEY" --columns "SUMMARY" --no-headers -t~"Epic" > "${SCRIPTS_DIR}/${JIRA_FILE_PREFIX}${board_lower}.txt"
 	echo "sync done"
-}
-
-function resm() {
-	sync_board "RESM"
 }
 
 function peop() {

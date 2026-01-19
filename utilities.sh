@@ -18,19 +18,16 @@ yesno() {
 }
 
 # Reusable board selection function
-# Returns the selected board code (RESM)
 # Usage: select_board
 function select_board() {
 	# Define available boards
 	typeset -A boards
 	boards=(
-		r "RESM"
 		p "PEOPLE"
 	)
 	
 	# Display options
 	echo "Available boards:" >&2
-	echo "  r: RESM board" >&2
 	echo "  p: PEOPLE board" >&2
 	
 	# Get user selection

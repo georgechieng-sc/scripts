@@ -57,6 +57,7 @@ slate_delete() {
 slate_tp() {
   local ticket="$1"
   local service="${2:-$(basename "$(pwd)")}"
+
   if [[ -z "$ticket" ]]; then
     echo "Usage: slate tp <ticket-id> [service]" >&2
     return 1
@@ -70,7 +71,10 @@ slate_tp() {
 slate_tpa() {
   local ticket="$(git_current_branch)"
   local service="$(basename "$(pwd)")"
-  
+
+  echo $ticket
+  echo "quitting existing telepresence sessions..."
+  telepresence quit -s
   scli dev intercept --slate-id "$ticket" "$service"
 }
 
