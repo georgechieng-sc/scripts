@@ -14,13 +14,10 @@ alias mysh="code -n ~/Desktop/safetyculture/scripts"
 alias ll="ls -la"
 alias dk="cd ~/Desktop"
 alias sc="cd ~/Desktop/safetyculture"
-alias fr="nvmcurr && cd ~/Desktop/safetyculture/frontend-reactor"
+alias fr="cd ~/Desktop/safetyculture/frontend-reactor"
 
-alias nvmcurr='nvm use 22'
-alias yb="fr && yarn b"
-alias yt="DEBUG_PRINT_LIMIT=100000 yarn test"
+alias yb="fr && pnpm b"
 
-alias lernaup="yarn global upgrade lerna"
 alias npmup="npm --global upgrade"
 
 alias gga="go get -u ./..."
@@ -37,12 +34,12 @@ alias sc-slate="aws sso login --profile development-sc001"
 alias sc-change="kubectl config set-context --current --namespace "
 alias slated="kubectl config set-context --current --namespace default"
 alias tidepods="kubectl get pods"
-alias kubeslate="kubectl config set-context eks01-ap-southeast-2-development-sc001"
-alias kubedev="kubectl config set-context eks01-ap-southeast-2-development"
+alias kubeslate="kubectl config use-context eks01-ap-southeast-2-development-sc001"
+alias kubedev="kubectl config use-context eks01-ap-southeast-2-development"
 
 alias brewdep="brew deps --tree --installed"
 alias portcheck="lsof -i"
-alias hack="code -n ."
+alias hack="load-nvm && code -n ."
 alias cleanslate="_ sudo rm -rf /private/var/log/asl/*.asl"
 
 # =============================================================================

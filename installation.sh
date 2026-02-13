@@ -32,6 +32,9 @@ set-kubeconf() {
 # =============================================================================
 
 load-nvm() {
+	# Skip if NVM is already loaded
+	[ -n "$NVM_DIR" ] && type nvm &>/dev/null && return
+	
 	export NVM_DIR="$HOME/.nvm"
 	[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
 }
@@ -42,16 +45,16 @@ nvm() {
 	nvm "$@"
 }
 
-yarn() {
-	unset -f yarn
-	load-nvm
-	yarn "$@"
-}
-
 npm() {
 	unset -f npm
 	load-nvm
 	npm "$@"
+}
+
+pnpm() {
+	unset -f pnpm
+	load-nvm
+	pnpm "$@"
 }
 
 npx() {

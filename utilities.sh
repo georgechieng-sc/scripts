@@ -175,7 +175,7 @@ function sci() {
 # Usage: litellm
 function litellm() {
   local litellm="$(cat ~/.scli/litellm.json)"
-  local expiry="$(echo $litellm | jq -r '.access_token.expires_at | fromdateiso8601')"
+  local expiry="$(echo $litellm | jq -r '.access_token.expires_at | sub("\\..*Z$"; "Z") | fromdateiso8601')"
   local today="$(date +%s)"
 
   if [ $today -gt $expiry ]; then
