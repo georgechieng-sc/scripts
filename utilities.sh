@@ -4,19 +4,6 @@
 # UTILITY FUNCTIONS
 # =============================================================================
 
-# Prompts user for yes/no input and returns the response
-# Returns: Y, y, N, or n
-yesno() {
-	local response
-	while true; do
-		read -r response
-		if [[ $response =~ ^[YyNn]$ ]]; then
-			break
-		fi
-	done
-	echo "$response"
-}
-
 # Reusable board selection function
 # Usage: select_board
 function select_board() {
@@ -153,9 +140,9 @@ function giffy() {
 }
 
 # Interactive directory change using fzf
-# Usage: cdi
+# Usage: cdi [dir_name]
 function cdi() {
-	local dir="$(ls | fzf --cycle --color=dark | xargs)"
+	local dir="${1:-$(ls | fzf --cycle --color=dark | xargs)}"
 
 	if [[ -n "$dir" ]]; then
 		cd "$dir"
@@ -163,22 +150,8 @@ function cdi() {
 }
 
 # SafetyCulture directory + interactive cd
-# Usage: sci
+# Usage: sci [dir_name]
 function sci() {
 	cd "$SAFETYCULTURE_DIR"
-	cdi
-}
-
-# Refresh LiteLLM API key if expired and export it
-# Usage: litellm
-function litellm() {
-  local litellm="$(cat ~/.scli/litellm.json)"
-  local expiry="$(echo $litellm | jq -r '.access_token.expires_at | sub("\\..*Z$"; "Z") | fromdateiso8601')"
-  local today="$(date +%s)"
-
-  if [ $today -gt $expiry ]; then
-    scli litellm get-key
-    echo "Your LiteLLM API key has been refreshed."
-  fi
-  export LITELLM_API_KEY="$(cat ~/.scli/litellm.json | jq -r '.access_token.token')"
+	cdi "$1"
 }

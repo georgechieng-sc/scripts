@@ -62,13 +62,6 @@ alias gblink='git branch --set-upstream-to=origin/$(git_current_branch)'
 alias gmm='gm $(git_main_branch)'
 alias gfm='git fetch origin $(git_main_branch):$(git_main_branch)'
 alias gpe='git commit --allow-empty --allow-empty-message && git push'
-alias gbi='git checkout $(git branch | fzf | xargs)'
 alias gver='git checkout --theirs -- VERSION.txt'
-
-# =============================================================================
-# ALIASES - CHATGPT
-# =============================================================================
-
-alias llm='chatgpt --set-model "$(chatgpt --list-models | fzf | sed "s/^- //")"'
 
 alias cors='open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security'

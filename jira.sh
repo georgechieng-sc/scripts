@@ -44,27 +44,34 @@ function peop() {
 }
 
 # Create a new git branch based on jira ticket ID
-# Usage: jbr
+# Usage: jbr [--move-progress] [ticket_id]
 function jbr() {
-	local board="$(select_board)"
-	
-	if [[ -z "$board" ]]; then
-		echo "Board selection cancelled"
-		return 1
-	fi
-	
-	# Convert board name to lowercase for filename
-	local board_lower=$(echo "$board" | tr '[:upper:]' '[:lower:]')
+	local move_progress=false
 
-	local name="$(cat "${SCRIPTS_DIR}/${JIRA_FILE_PREFIX}${board_lower}.txt" | fzf --cycle --color=dark | cut -f1 | xargs)"
+	if [[ "$1" == "--move-progress" ]]; then
+		move_progress=true
+		shift
+	fi
+
+	local name="$1"
+
+	if [[ -z "$name" ]]; then
+		local board="$(select_board)"
+
+		if [[ -z "$board" ]]; then
+			echo "Board selection cancelled"
+			return 1
+		fi
+
+		local board_lower=$(echo "$board" | tr '[:upper:]' '[:lower:]')
+		name="$(cat "${SCRIPTS_DIR}/${JIRA_FILE_PREFIX}${board_lower}.txt" | fzf --cycle --color=dark | cut -f1 | xargs)"
+	fi
 
 	if [[ -n "$name" ]]; then
 		echo "creating branch with the name: $name"
 		branch "$name"
 
-		echo "Do you want to move the JIRA ticket to In Progress as well? [yn]"
-		local yn="$(yesno)"
-		if [[ $yn =~ ^[Yy]$ ]]; then
+		if [[ "$move_progress" == true ]]; then
 			echo "moving JIRA issue to In-Progress"
 			jira issue move "$name" "In Progress"
 		fi
@@ -72,53 +79,59 @@ function jbr() {
 }
 
 # Move JIRA ticket to different status
-# Usage: mvj
+# Usage: mvj [ticket_id] [status]
 function mvj() {
-	local board="$(select_board)"
-	
-	if [[ -z "$board" ]]; then
-		echo "Board selection cancelled"
-		return 1
+	local name="$1"
+	local pr_status="$2"
+
+	if [[ -z "$name" ]]; then
+		local board="$(select_board)"
+
+		if [[ -z "$board" ]]; then
+			echo "Board selection cancelled"
+			return 1
+		fi
+
+		local board_lower=$(echo "$board" | tr '[:upper:]' '[:lower:]')
+		name="$(cat "${SCRIPTS_DIR}/${JIRA_FILE_PREFIX}${board_lower}.txt" | fzf --cycle --color=dark | cut -f1 | xargs)"
 	fi
 
-	# Convert board name to lowercase for filename
-	local board_lower=$(echo "$board" | tr '[:upper:]' '[:lower:]')
-
-	local name="$(cat "${SCRIPTS_DIR}/${JIRA_FILE_PREFIX}${board_lower}.txt" | fzf --cycle --color=dark | cut -f1 | xargs)"
 	if [[ -n "$name" ]]; then
 		echo "moving JIRA ticket: $name"
-		local pr_status="$(select_status)"
+		if [[ -z "$pr_status" ]]; then
+			pr_status="$(select_status)"
+		fi
 		jira issue move "$name" "$pr_status"
 	fi
 }
 
-# AI-powered JIRA ticket creation based on git diff
-# Usage: jdiff
+# Create JIRA ticket, branch, commit, and PR from current changes
+# Usage: jdiff <title> <description>
 jdiff() {
+    local original_title="$1"
+    local description="$2"
+
+    if [[ -z "$original_title" || -z "$description" ]]; then
+        echo -e "${RED}ERROR: Title and description are required${RESET}"
+        echo "Usage: jdiff <title> <description>"
+        return 1
+    fi
+
     echo -e "${BLUE}Step 1: Checking required tools...${RESET}"
     command -v git >/dev/null 2>&1 || { echo -e "${RED}git is required but not installed. Aborting.${RESET}" >&2; return 1; }
-    command -v chatgpt >/dev/null 2>&1 || { echo -e "${RED}chatgpt CLI is required but not installed. Aborting.${RESET}" >&2; return 1; }
     command -v jira >/dev/null 2>&1 || { echo -e "${RED}jira-cli is required but not installed. Aborting.${RESET}" >&2; return 1; }
-    command -v branch >/dev/null 2>&1 || { echo -e "${YELLOW}br command not found. Will skip branch creation.${RESET}" >&2; }
 
     echo -e "${BLUE}Step 2: Prompting user to choose project...${RESET}"
     local PROJECT_CODE=$(select_board)
     [[ -z "$PROJECT_CODE" ]] && return 1
 
-    echo -e "${BLUE}Step 3: Generating title and description using ChatGPT from git diff...${RESET}"
-    local git_diff=$(git diff HEAD)
-    local chatgpt_output=$(echo "$git_diff" | chatgpt -q "Based on this git diff, generate a concise Jira ticket title (max 50 chars) and description (max 200 words, do not use any formatting or bullet point just a paragraph will do). Format the output as 'Title: <title>\nDescription: <description>'")
-
-    # Extract and sanitize title
     local curr_dir=$(basename "$PWD")
-    local original_title=$(echo "$chatgpt_output" | grep "Title:" | sed 's/Title: //' | tr -d '\n' | sed 's/:space:+/ /g')
     local title="[${curr_dir}] ${original_title}"
     title=$(echo "$title" | cut -c 1-255)
-    local description=$(echo "$chatgpt_output" | grep "Description:" | sed 's/Description: //')
 
-		echo "$title"
-		echo "$description"
-    
+    echo "$title"
+    echo "$description"
+
     local current_user=$(jira me)
     local issue_type="Task"
     local custom_field="team=b7aa1ee4-0d96-4e7f-9014-4268bf86008a"
@@ -130,17 +143,17 @@ jdiff() {
         [[ -z "$component" ]] && return 1
     fi
 
-    echo -e "${BLUE}Step 4: Creating Jira ticket...${RESET}"
+    echo -e "${BLUE}Step 3: Creating Jira ticket...${RESET}"
     local jira_output=$(jira issue create -p "$PROJECT_CODE" -s "$title" -t "$issue_type" -b "$description" -a "$current_user" -C "$component" --custom "$custom_field" -y "$priority" --no-input --web)
     local ticket_number=$(echo "$jira_output" | grep -oE "${PROJECT_CODE}-[0-9]+")
 
-    echo -e "${BLUE}Step 5: Creating branch for ticket...${RESET}"
+    echo -e "${BLUE}Step 4: Creating branch for ticket...${RESET}"
     jira issue move $ticket_number "In Progress"
     branch "$ticket_number"
 
-    echo -e "${BLUE}Step 6: Committing changes to the new branch...${RESET}"
-    gacp -ai
+    echo -e "${BLUE}Step 5: Committing changes to the new branch...${RESET}"
+    gacp "$original_title"
 
-    echo -e "${BLUE}Step 7: Creating pull request...${RESET}"
-    pr -ai
+    echo -e "${BLUE}Step 6: Creating pull request...${RESET}"
+    pr "$original_title"
 }
