@@ -33,7 +33,7 @@ function select_board() {
 	# Get user selection
 	local choice board_code
 	while true; do
-		read -r "choice?Choose board (r, p): "
+		read -r "choice?Choose board (p): "
 		
 		board_code="${boards[$choice]}"
 		if [[ -n "$board_code" ]]; then
@@ -77,7 +77,6 @@ function select_status() {
 	# Define available statuses
 	typeset -A statuses
 	statuses=(
-		ir "In Review"
 		cr "Code Review"
 		ip "In Progress"
 		d "Done"
@@ -85,7 +84,6 @@ function select_status() {
 	
 	# Display options
 	echo "Available statuses:" >&2
-	echo "  ir: In Review" >&2
 	echo "  cr: Code Review" >&2
 	echo "  ip: In Progress" >&2
 	echo "  d: Done" >&2
@@ -93,7 +91,7 @@ function select_status() {
 	# Get user selection
 	local choice status_code
 	while true; do
-		read -r "choice?Choose status (ir, cr, ip, d): "
+		read -r "choice?Choose status (cr, ip, d): "
 		
 		status_code="${statuses[$choice]}"
 		if [[ -n "$status_code" ]]; then

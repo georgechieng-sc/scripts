@@ -52,6 +52,7 @@ slate_delete() {
   fi
   echo "Deleting slate $slate_id"
   scli slate delete-slate --id "$slate_id"
+  sc-change default
 }
 
 slate_tp() {

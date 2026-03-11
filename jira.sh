@@ -115,6 +115,9 @@ jdiff() {
     local title="[${curr_dir}] ${original_title}"
     title=$(echo "$title" | cut -c 1-255)
     local description=$(echo "$chatgpt_output" | grep "Description:" | sed 's/Description: //')
+
+		echo "$title"
+		echo "$description"
     
     local current_user=$(jira me)
     local issue_type="Task"

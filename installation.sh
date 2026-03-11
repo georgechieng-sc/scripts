@@ -14,13 +14,11 @@ install-omzsh() {
 
 install-deps() {
 	brew tap ankitpokhrel/jira-cli 
-	brew tap datawire/blackbird 
-	brew tap gromgit/fuse 
-	brew tap johanhaleby/kubetail 
+	brew tap johanhaleby/kubetail
 	brew tap safetyculture/tap
 	brew tap kardolus/chatgpt-cli
 	brew install --cask macfuse	session-manager-plugin sublime-text	wombat docker
-	brew install awscli cairo chatgpt-cli clang-format docker kubectl expect ffmpeg fzf fzy gh giflib gifsicle git-delta go imagemagick jira-cli jpeg jq kcat libpng md5sha1sum mkcert mockery nvm pango pkg-config pwgen python@3.11 scli staticcheck terraform vips zsh-autosuggestions zsh-syntax-highlighting glow kubie
+	brew install awscli chatgpt-cli delve ffmpeg fzf gh gifsicle git-delta glow go jira-cli jq mkcert nvm pwgen python@3.11 scli staticcheck zsh-autosuggestions zsh-syntax-highlighting
 }
 
 set-kubeconf() {
