@@ -33,7 +33,7 @@ When args are provided, no TTY interaction is needed.
 | `peop` | `peop` | Shorthand for `sync_board PEOPLE` |
 | `jbr` | `jbr [--move-progress] <ticket_id>` | Create branch from ticket. `--move-progress` moves ticket to In Progress |
 | `mvj` | `mvj <ticket_id> <status>` | Move JIRA ticket. Statuses: `Code Review`, `In Progress`, `Done` |
-| `jdiff` | `jdiff <title> <description>` | Full workflow: create JIRA ticket, branch, commit, and PR |
+| `jdiff` | `jdiff -t <title> -d <desc> -p <project> [-c <component>]` | Full workflow: create JIRA ticket, branch, commit, and PR. Projects: `PEOPLE`. Components: `Documents`, `Heads Up`. Optional: `--priority`, `--type` |
 
 ### PR Review (pr-review.sh)
 
