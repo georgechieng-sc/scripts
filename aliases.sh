@@ -40,6 +40,7 @@ alias kubedev="kubectl config use-context eks01-ap-southeast-2-development"
 alias brewdep="brew deps --tree --installed"
 alias portcheck="lsof -i"
 alias hack="load-nvm && code -n ."
+alias claude="load-nvm && claude"
 alias cleanslate="_ sudo rm -rf /private/var/log/asl/*.asl"
 
 # =============================================================================

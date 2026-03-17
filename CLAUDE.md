@@ -20,10 +20,10 @@ When args are provided, no TTY interaction is needed.
 | Function | Usage | Description |
 |----------|-------|-------------|
 | `branch` | `branch <name>` | Switch to main, pull, create branch, push to remote |
-| `pr` | `pr [--move-jira <status>] [--ready] [title] [merge_dest]` | Create draft PR. `--move-jira "Code Review"` moves JIRA ticket. `--ready` marks PR as ready. `-v` views existing PR in browser |
+| `pr` | `pr [--move-jira <status>] [--ready] [-t <title>] [-d <desc>]` | Create draft PR. Title auto-prefixed with branch name (JIRA ticket included). `--move-jira "Code Review"` moves JIRA ticket. `--ready` marks PR as ready. `-v` views existing PR in browser |
 | `gbi` | `gbi <branch_name>` | Checkout branch |
 | `gbdi` | `gbdi [--delete-slate] [--move-done] <branch_name>` | Delete branch. `--delete-slate` removes slate instance. `--move-done` moves JIRA to Done |
-| `gacp` | `gacp <message>` | Add, commit, push. Shorthand flags: `-rri` (remove redundant import), `-gmt` (go mod tidy), `-gga` (go get all), `-gmm` (merged main), `-vb` (version bump), `-ut` (updated unit tests), `-fmt` (formatted code) |
+| `gacp` | `gacp <message>` | Add, commit, push. Shorthand flags: `-rri` (remove redundant import), `-gmt` (go mod tidy), `-gggba` (go get all), `-gmm` (merged main), `-vb` (version bump), `-ut` (updated unit tests), `-fmt` (formatted code) |
 
 ### JIRA (jira.sh)
 

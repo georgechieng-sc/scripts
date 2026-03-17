@@ -32,7 +32,7 @@ function branch() {
 }
 
 # Create draft PR, optionally move JIRA status and mark ready
-# Usage: pr [-v] [--move-jira <status>] [--ready] [title] [merge_destination]
+# Usage: pr [-v] [--move-jira <status>] [--ready] [-t <title>] [-d <description>]
 function pr() {
     if [[ $1 == '-v' ]]; then
         gh pr view --web;
@@ -40,6 +40,7 @@ function pr() {
     fi
 
     local title=""
+    local description=""
     local branch=`git symbolic-ref --short -q HEAD`
     local mergeDst="$(git_main_branch)"
     local move_jira=""
@@ -56,20 +57,22 @@ function pr() {
                 mark_ready=true
                 shift
                 ;;
+            -t)
+                title="$2"
+                shift 2
+                ;;
+            -d)
+                description="$2"
+                shift 2
+                ;;
             *)
                 break
                 ;;
         esac
     done
 
-    title="$(git log -1 --oneline --format=%s)"
-
-    if [[ $1 != '' ]]; then
-        title="$1"
-    fi
-
-    if [[ $2 != '' ]]; then
-        mergeDst="$2"
+    if [[ -z "$title" ]]; then
+        title="$(git log -1 --oneline --format=%s)"
     fi
 
     echo "let's pull from remote"
@@ -78,7 +81,11 @@ function pr() {
     echo "let's push this to remote first 😉"
     git push --set-upstream origin "$branch"
 
-    gh pr create -d -t "[$branch] $title" -B "$mergeDst" -T 'PULL_REQUEST_TEMPLATE.md'
+    if [[ -n "$description" ]]; then
+        gh pr create -d -t "[$branch] $title" -B "$mergeDst" -b "$description"
+    else
+        gh pr create -d -t "[$branch] $title" -B "$mergeDst" --fill-first
+    fi
 
     if [[ -n "$move_jira" ]]; then
         echo "moving JIRA issue to ${move_jira}"
