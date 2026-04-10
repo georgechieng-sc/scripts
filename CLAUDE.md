@@ -80,6 +80,7 @@ When args are provided, no TTY interaction is needed.
 | `ids12` | `ids12 <uuid> [prefix]` | Convert UUID to S12ID. Prefixes: `role`, `user`, `action`, `audit` |
 | `pw` | `pw [-s] <input>` | Generate password from seed. `-s` shows seed only |
 | `auto-sql` | `auto-sql` | Generate next SQL migration file (interactive — reads description from stdin) |
+| `claude_usage` | `claude_usage` | Show Claude.ai org overage spend limit. Requires `CLAUDE_SESSION_KEY` + `CLAUDE_CF_CLEARANCE` env vars (cookies from claude.ai) |
 
 ### Aliases (aliases.sh)
 

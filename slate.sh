@@ -40,7 +40,7 @@ slate_extend() {
     return 1
   fi
   echo "Extending $slate_id by $days day(s)"
-  scli slate extend-slate-expiry --id "$slate_id" --days "$days"
+  scli slate extend-slate-expiry --slate "$slate_id" --days "$days"
 }
 
 slate_delete() {
@@ -51,7 +51,7 @@ slate_delete() {
     return 1
   fi
   echo "Deleting slate $slate_id"
-  scli slate delete-slate --id "$slate_id"
+  scli slate delete-slate --slate "$slate_id"
   sc-change default
 }
 
