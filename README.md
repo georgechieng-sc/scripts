@@ -114,7 +114,7 @@ Use: Run functions manually; not auto-run to avoid unintended installs.
 
 ### utilities.sh
 Purpose: Shared helpers (input, selection, navigation, media conversion)
-Examples: `yesno`, `select_board`, `select_status`, `cleanpipe`, `giffy`, `cdi [dir]`, `sci [dir]`
+Examples: `yesno`, `select_status`, `cleanpipe`, `giffy`, `cdi [dir]`, `sci [dir]`
 Depends on: `constants.sh`
 
 ### git.sh

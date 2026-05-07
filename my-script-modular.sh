@@ -48,7 +48,7 @@ source_script "aliases.sh"          # All aliases
 source_script "installation.sh"     # Installation functions
 
 # Utility modules (depend on constants)
-source_script "utilities.sh"        # Utility functions (including select_board)
+source_script "utilities.sh"        # Utility functions
 
 # Feature modules (depend on utilities and constants)
 source_script "git.sh"              # Git workflow functions

@@ -5,46 +5,27 @@
 # =============================================================================
 
 # Dynamic board syncing function
-# Usage: sync_board [board_code] 
-# If no board_code provided, prompts user to select
+# Usage: sync_board <board_code>
 function sync_board() {
-	local board=""
-	
-	# If board code is provided as argument, use it
-	if [[ -n "$1" ]]; then
-		# Validate the provided board code
-		case "$1" in
-			"PEOPLE") board="$1" ;;
-			*) 
-				echo "Invalid board code: $1. Valid options: PEOPLE"
-				return 1
-				;;
-    
-		esac
-	else
-		# No argument provided, prompt user to select
-		board=$(select_board)
-		if [[ -z "$board" ]]; then
-			echo "Board selection cancelled"
-			return 1
-		fi
+	local board="$1"
+
+	if [[ -z "$board" ]]; then
+		echo -e "${RED}ERROR: Board code required${RESET}"
+		echo "Usage: sync_board <board_code>"
+		return 1
 	fi
-	
+
 	echo "syncing JIRA $board board issues, assigned to you"
-	
-	# Convert board name to lowercase for filename
+
 	local board_lower=$(echo "$board" | tr '[:upper:]' '[:lower:]')
-	
+
 	jira issue list -p "$board" -a$(jira me) -s~"Done" -s~"Won't Do" --plain --columns "KEY" --columns "SUMMARY" --no-headers -t~"Epic" > "${SCRIPTS_DIR}/${JIRA_FILE_PREFIX}${board_lower}.txt"
 	echo "sync done"
 }
 
-function peop() {
-    sync_board "PEOPLE"
-}
-
 # Create a new git branch based on jira ticket ID
-# Usage: jbr [--move-progress] [ticket_id]
+# Usage: jbr [--move-progress] <ticket_id|board_code>
+# If a board code is given (no hyphen), fzf over that board's synced tickets.
 function jbr() {
 	local move_progress=false
 
@@ -56,15 +37,20 @@ function jbr() {
 	local name="$1"
 
 	if [[ -z "$name" ]]; then
-		local board="$(select_board)"
+		echo -e "${RED}ERROR: Ticket ID or board code required${RESET}"
+		echo "Usage: jbr [--move-progress] <ticket_id|board_code>"
+		return 1
+	fi
 
-		if [[ -z "$board" ]]; then
-			echo "Board selection cancelled"
+	# If arg has no hyphen, treat as board code and fzf over its synced tickets
+	if [[ "$name" != *-* ]]; then
+		local board_lower=$(echo "$name" | tr '[:upper:]' '[:lower:]')
+		local board_file="${SCRIPTS_DIR}/${JIRA_FILE_PREFIX}${board_lower}.txt"
+		if [[ ! -f "$board_file" ]]; then
+			echo -e "${RED}ERROR: No synced tickets for board '$name'. Run: sync_board $name${RESET}"
 			return 1
 		fi
-
-		local board_lower=$(echo "$board" | tr '[:upper:]' '[:lower:]')
-		name="$(cat "${SCRIPTS_DIR}/${JIRA_FILE_PREFIX}${board_lower}.txt" | fzf --cycle --color=dark | cut -f1 | xargs)"
+		name="$(cat "$board_file" | fzf --cycle --color=dark | cut -f1 | xargs)"
 	fi
 
 	if [[ -n "$name" ]]; then
@@ -79,21 +65,26 @@ function jbr() {
 }
 
 # Move JIRA ticket to different status
-# Usage: mvj [ticket_id] [status]
+# Usage: mvj <ticket_id|board_code> [status]
+# If a board code is given (no hyphen), fzf over that board's synced tickets.
 function mvj() {
 	local name="$1"
 	local pr_status="$2"
 
 	if [[ -z "$name" ]]; then
-		local board="$(select_board)"
+		echo -e "${RED}ERROR: Ticket ID or board code required${RESET}"
+		echo "Usage: mvj <ticket_id|board_code> [status]"
+		return 1
+	fi
 
-		if [[ -z "$board" ]]; then
-			echo "Board selection cancelled"
+	if [[ "$name" != *-* ]]; then
+		local board_lower=$(echo "$name" | tr '[:upper:]' '[:lower:]')
+		local board_file="${SCRIPTS_DIR}/${JIRA_FILE_PREFIX}${board_lower}.txt"
+		if [[ ! -f "$board_file" ]]; then
+			echo -e "${RED}ERROR: No synced tickets for board '$name'. Run: sync_board $name${RESET}"
 			return 1
 		fi
-
-		local board_lower=$(echo "$board" | tr '[:upper:]' '[:lower:]')
-		name="$(cat "${SCRIPTS_DIR}/${JIRA_FILE_PREFIX}${board_lower}.txt" | fzf --cycle --color=dark | cut -f1 | xargs)"
+		name="$(cat "$board_file" | fzf --cycle --color=dark | cut -f1 | xargs)"
 	fi
 
 	if [[ -n "$name" ]]; then
@@ -106,7 +97,7 @@ function mvj() {
 }
 
 # Create JIRA ticket, branch, commit, and PR from current changes
-# Usage: jdiff -t <title> -d <description> -p <project> [-c <component>] [--priority <priority>] [--type <type>]
+# Usage: jdiff -t <title> -d <description> -p <project> -c <component> [--priority <priority>] [--type <type>]
 jdiff() {
     local original_title="" description="" PROJECT_CODE="" component="" priority="Low" issue_type="Task"
 
@@ -120,30 +111,15 @@ jdiff() {
             --type) issue_type="$2"; shift 2 ;;
             *)
                 echo -e "${RED}ERROR: Unknown flag: $1${RESET}"
-                echo "Usage: jdiff -t <title> -d <description> -p <project> [-c <component>] [--priority <priority>] [--type <type>]"
-                echo "Projects: PEOPLE"
-                echo "Components (PEOPLE): Documents, \"Heads Up\""
+                echo "Usage: jdiff -t <title> -d <description> -p <project> -c <component> [--priority <priority>] [--type <type>]"
                 return 1
                 ;;
         esac
     done
 
-    if [[ -z "$original_title" || -z "$description" || -z "$PROJECT_CODE" ]]; then
-        echo -e "${RED}ERROR: Title (-t), description (-d), and project (-p) are required${RESET}"
-        echo "Usage: jdiff -t <title> -d <description> -p <project> [-c <component>] [--priority <priority>] [--type <type>]"
-        return 1
-    fi
-
-    case "$PROJECT_CODE" in
-        PEOPLE) ;;
-        *)
-            echo -e "${RED}ERROR: Invalid project: $PROJECT_CODE. Valid options: PEOPLE${RESET}"
-            return 1
-            ;;
-    esac
-
-    if [[ "$PROJECT_CODE" == "PEOPLE" && -z "$component" ]]; then
-        echo -e "${RED}ERROR: Component (-c) is required for PEOPLE project. Valid options: Documents, \"Heads Up\"${RESET}"
+    if [[ -z "$original_title" || -z "$description" || -z "$PROJECT_CODE" || -z "$component" ]]; then
+        echo -e "${RED}ERROR: Title (-t), description (-d), project (-p), and component (-c) are required${RESET}"
+        echo "Usage: jdiff -t <title> -d <description> -p <project> -c <component> [--priority <priority>] [--type <type>]"
         return 1
     fi
 
@@ -156,10 +132,9 @@ jdiff() {
     title=$(echo "$title" | cut -c 1-255)
 
     local current_user=$(jira me)
-    local custom_field="team=b7aa1ee4-0d96-4e7f-9014-4268bf86008a"
 
     echo -e "${BLUE}Step 2: Creating Jira ticket...${RESET}"
-    local jira_output=$(jira issue create -p "$PROJECT_CODE" -s "$title" -t "$issue_type" -b "$description" -a "$current_user" -C "$component" --custom "$custom_field" -y "$priority" --no-input --web)
+    local jira_output=$(jira issue create -p "$PROJECT_CODE" -s "$title" -t "$issue_type" -b "$description" -a "$current_user" -C "$component" -y "$priority" --no-input --web)
     local ticket_number=$(echo "$jira_output" | grep -oE "${PROJECT_CODE}-[0-9]+")
 
     echo -e "${BLUE}Step 3: Creating branch for ticket...${RESET}"

@@ -29,11 +29,10 @@ When args are provided, no TTY interaction is needed.
 
 | Function | Usage | Description |
 |----------|-------|-------------|
-| `sync_board` | `sync_board <board_code>` | Sync JIRA issues to local file. Valid boards: `PEOPLE` |
-| `peop` | `peop` | Shorthand for `sync_board PEOPLE` |
-| `jbr` | `jbr [--move-progress] <ticket_id>` | Create branch from ticket. `--move-progress` moves ticket to In Progress |
-| `mvj` | `mvj <ticket_id> <status>` | Move JIRA ticket. Statuses: `Code Review`, `In Progress`, `Done` |
-| `jdiff` | `jdiff -t <title> -d <desc> -p <project> [-c <component>]` | Full workflow: create JIRA ticket, branch, commit, and PR. Projects: `PEOPLE`. Components: `Documents`, `Heads Up`. Optional: `--priority`, `--type` |
+| `sync_board` | `sync_board <board_code>` | Sync JIRA issues to local file. Pass any project code |
+| `jbr` | `jbr [--move-progress] <ticket_id\|board_code>` | Create branch from ticket. If a board code is passed, fzf over that board's synced tickets. `--move-progress` moves ticket to In Progress |
+| `mvj` | `mvj <ticket_id\|board_code> [status]` | Move JIRA ticket. If a board code is passed, fzf over its synced tickets. Statuses: `Code Review`, `In Progress`, `Done` |
+| `jdiff` | `jdiff -t <title> -d <desc> -p <project> -c <component>` | Full workflow: create JIRA ticket, branch, commit, and PR. Optional: `--priority`, `--type` |
 
 ### PR Review (pr-review.sh)
 

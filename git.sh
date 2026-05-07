@@ -82,9 +82,9 @@ function pr() {
     git push --set-upstream origin "$branch"
 
     if [[ -n "$description" ]]; then
-        gh pr create -d -t "[$branch] $title" -B "$mergeDst" -b "$description"
+        gh pr create -d -t "$title" -B "$mergeDst" -b "$description"
     else
-        gh pr create -d -t "[$branch] $title" -B "$mergeDst" --fill-first
+        gh pr create -d -t "$title" -B "$mergeDst" --fill-first
     fi
 
     if [[ -n "$move_jira" ]]; then
