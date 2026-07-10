@@ -13,7 +13,7 @@ function s12id() {
 		return 1
 	fi
 
-	local id="$(echo "$1" | sed -e 's/role_//g' -e 's/user_//g' -e 's/action_//g' -e 's/audit_//g')"
+	local id="$(echo "$1" | sed -e 's/role_//g' -e 's/user_//g' -e 's/action_//g' -e 's/audit_//g' -e 's/document_//g')"
 	local uuid=''
 
 	for (( i=0; i<${#id}; i++ )); do

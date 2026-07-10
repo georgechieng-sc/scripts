@@ -20,7 +20,7 @@ When args are provided, no TTY interaction is needed.
 | Function | Usage | Description |
 |----------|-------|-------------|
 | `branch` | `branch <name>` | Switch to main, pull, create branch, push to remote |
-| `pr` | `pr [--move-jira <status>] [--ready] [-t <title>] [-d <desc>]` | Create draft PR. Title auto-prefixed with branch name (JIRA ticket included). `--move-jira "Code Review"` moves JIRA ticket. `--ready` marks PR as ready. `-v` views existing PR in browser |
+| `pr` | `pr [--move-jira <status>] [--ready] [-t <title>] [-d <desc>]` | Create draft PR. Title auto-prefixed with branch name (JIRA ticket included). `--move-jira "In Progress"` moves JIRA ticket. `--ready` marks PR as ready. `-v` views existing PR in browser |
 | `gbi` | `gbi <branch_name>` | Checkout branch |
 | `gbdi` | `gbdi [--delete-slate] [--move-done] <branch_name>` | Delete branch. `--delete-slate` removes slate instance. `--move-done` moves JIRA to Done |
 | `gacp` | `gacp <message>` | Add, commit, push. Shorthand flags: `-rri` (remove redundant import), `-gmt` (go mod tidy), `-gggba` (go get all), `-gmm` (merged main), `-vb` (version bump), `-ut` (updated unit tests), `-fmt` (formatted code) |
@@ -31,7 +31,7 @@ When args are provided, no TTY interaction is needed.
 |----------|-------|-------------|
 | `sync_board` | `sync_board <board_code>` | Sync JIRA issues to local file. Pass any project code |
 | `jbr` | `jbr [--move-progress] <ticket_id\|board_code>` | Create branch from ticket. If a board code is passed, fzf over that board's synced tickets. `--move-progress` moves ticket to In Progress |
-| `mvj` | `mvj <ticket_id\|board_code> [status]` | Move JIRA ticket. If a board code is passed, fzf over its synced tickets. Statuses: `Code Review`, `In Progress`, `Done` |
+| `mvj` | `mvj <ticket_id\|board_code> [status]` | Move JIRA ticket. If a board code is passed, fzf over its synced tickets. Statuses: `In Progress`, `Done` |
 | `jdiff` | `jdiff -t <title> -d <desc> -p <project> -c <component>` | Full workflow: create JIRA ticket, branch, commit, and PR. Optional: `--priority`, `--type` |
 
 ### PR Review (pr-review.sh)

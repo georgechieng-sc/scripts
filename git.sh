@@ -88,8 +88,13 @@ function pr() {
     fi
 
     if [[ -n "$move_jira" ]]; then
-        echo "moving JIRA issue to ${move_jira}"
-        jira issue move $branch "$move_jira"
+        local ticket_key="$(grep -oE '[A-Z]+-[0-9]+' <<< "$branch" | head -n 1)"
+        if [[ -z "$ticket_key" ]]; then
+            echo "WARN: could not extract JIRA ticket key from branch '$branch'" >&2
+        else
+            echo "moving JIRA issue $ticket_key to ${move_jira}"
+            jira issue move "$ticket_key" "$move_jira" </dev/null
+        fi
     fi
 
     if [[ "$mark_ready" == true ]]; then
@@ -130,8 +135,13 @@ function gbdi() {
 		fi
 
 		if [[ "$move_done" == true ]]; then
-			echo "moving JIRA issue to Done"
-			jira issue move $branch "Done"
+			local ticket_key="$(grep -oE '[A-Z]+-[0-9]+' <<< "$branch" | head -n 1)"
+			if [[ -z "$ticket_key" ]]; then
+				echo "WARN: could not extract JIRA ticket key from branch '$branch'" >&2
+			else
+				echo "moving JIRA issue $ticket_key to Done"
+				jira issue move "$ticket_key" "Done" </dev/null
+			fi
 		fi
 	fi
 }

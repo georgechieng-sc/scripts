@@ -48,12 +48,6 @@ npm() {
 	npm "$@"
 }
 
-pnpm() {
-	unset -f pnpm
-	load-nvm
-	pnpm "$@"
-}
-
 npx() {
 	unset -f npx
 	load-nvm

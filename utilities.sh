@@ -8,21 +8,19 @@ function select_status() {
 	# Define available statuses
 	typeset -A statuses
 	statuses=(
-		cr "Code Review"
 		ip "In Progress"
 		d "Done"
 	)
 	
 	# Display options
 	echo "Available statuses:" >&2
-	echo "  cr: Code Review" >&2
 	echo "  ip: In Progress" >&2
 	echo "  d: Done" >&2
 	
 	# Get user selection
 	local choice status_code
 	while true; do
-		read -r "choice?Choose status (cr, ip, d): "
+		read -r "choice?Choose status (ip, d): "
 		
 		status_code="${statuses[$choice]}"
 		if [[ -n "$status_code" ]]; then

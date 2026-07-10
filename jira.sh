@@ -97,29 +97,28 @@ function mvj() {
 }
 
 # Create JIRA ticket, branch, commit, and PR from current changes
-# Usage: jdiff -t <title> -d <description> -p <project> -c <component> [--priority <priority>] [--type <type>]
+# Usage: jdiff -t <title> -d <description> -p <project> [--priority <priority>] [--type <type>]
 jdiff() {
-    local original_title="" description="" PROJECT_CODE="" component="" priority="Low" issue_type="Task"
+    local original_title="" description="" PROJECT_CODE="" priority="Low" issue_type="Task"
 
     while [[ $# -gt 0 ]]; do
         case "$1" in
             -t) original_title="$2"; shift 2 ;;
             -d) description="$2"; shift 2 ;;
             -p) PROJECT_CODE="$2"; shift 2 ;;
-            -c) component="$2"; shift 2 ;;
             --priority) priority="$2"; shift 2 ;;
             --type) issue_type="$2"; shift 2 ;;
             *)
                 echo -e "${RED}ERROR: Unknown flag: $1${RESET}"
-                echo "Usage: jdiff -t <title> -d <description> -p <project> -c <component> [--priority <priority>] [--type <type>]"
+                echo "Usage: jdiff -t <title> -d <description> -p <project> [--priority <priority>] [--type <type>]"
                 return 1
                 ;;
         esac
     done
 
-    if [[ -z "$original_title" || -z "$description" || -z "$PROJECT_CODE" || -z "$component" ]]; then
-        echo -e "${RED}ERROR: Title (-t), description (-d), project (-p), and component (-c) are required${RESET}"
-        echo "Usage: jdiff -t <title> -d <description> -p <project> -c <component> [--priority <priority>] [--type <type>]"
+    if [[ -z "$original_title" || -z "$description" || -z "$PROJECT_CODE" ]]; then
+        echo -e "${RED}ERROR: Title (-t), description (-d), project (-p) are required${RESET}"
+        echo "Usage: jdiff -t <title> -d <description> -p <project> [--priority <priority>] [--type <type>]"
         return 1
     fi
 
@@ -134,7 +133,7 @@ jdiff() {
     local current_user=$(jira me)
 
     echo -e "${BLUE}Step 2: Creating Jira ticket...${RESET}"
-    local jira_output=$(jira issue create -p "$PROJECT_CODE" -s "$title" -t "$issue_type" -b "$description" -a "$current_user" -C "$component" -y "$priority" --no-input --web)
+    local jira_output=$(jira issue create -p "$PROJECT_CODE" -s "$title" -t "$issue_type" -b "$description" -a "$current_user" -y "$priority" --no-input --web)
     local ticket_number=$(echo "$jira_output" | grep -oE "${PROJECT_CODE}-[0-9]+")
 
     echo -e "${BLUE}Step 3: Creating branch for ticket...${RESET}"
