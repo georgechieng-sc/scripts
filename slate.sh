@@ -66,17 +66,23 @@ slate_tp() {
   
   echo "quitting existing telepresence sessions..."
   telepresence quit -s
-  scli dev intercept --slate-id "$ticket" "$service"
+  scli dev intercept --slate "$ticket" "$service"
 }
 
 slate_tpa() {
-  local ticket="$(git_current_branch)"
+  local branch="$(git_current_branch)"
+  local ticket="$(echo "$branch" | grep -oiE '^[a-z]+-[0-9]+')"
   local service="$(basename "$(pwd)")"
 
-  echo $ticket
+  if [[ -z "$ticket" ]]; then
+    echo "ERROR: no jira ticket found in branch '$branch'" >&2
+    return 1
+  fi
+
+  echo "$ticket"
   echo "quitting existing telepresence sessions..."
   telepresence quit -s
-  scli dev intercept --slate-id "$ticket" "$service"
+  scli dev intercept --slate "$ticket" "$service"
 }
 
 slate_help() {
