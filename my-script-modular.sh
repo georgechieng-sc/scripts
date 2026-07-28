@@ -56,6 +56,7 @@ source_script "jira.sh"             # JIRA integration functions
 source_script "repository.sh"       # Repository management
 source_script "pr-review.sh"        # PR review workflow
 source_script "slate.sh"            # Slate management functions
+source_script "databricks.sh"      # Databricks PAT management
 source_script "specialized.sh"      # Specialized utility functions
 
 if [[ "$VERBOSE" == "true" ]]; then
@@ -68,6 +69,7 @@ if [[ "$VERBOSE" == "true" ]]; then
     echo "   • Repository: repo, grc"
     echo "   • PR Review: stamp, prd, rr, review"
     echo "   • Utilities: cleanpipe, timezsh, giffy, cdi, sci"
+    echo "   • Databricks: dbx-pat"
     echo "   • Specialized: s12id, ids12, pw, auto-sql"
     echo ""
     echo "💡 Tip: Each script can be sourced individually from the same directory"

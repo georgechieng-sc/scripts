@@ -28,6 +28,7 @@ scripts/
 ├── repository.sh           # Repository list + cloning helpers
 ├── pr-review.sh            # Pull request review helpers
 ├── slate.sh                # Slate environment management
+├── databricks.sh           # Databricks PAT minting for omp + CLI
 ├── specialized.sh          # Focused one-off utilities
 └── prompts/
     └── analyze_pull-request.md  # PR review prompt template (reference)
@@ -159,6 +160,11 @@ Depends on: `constants.sh`
 Purpose: Ephemeral environment ("slate") lifecycle + Kubernetes context helpers
 Examples: `slate up`, `slate ls`, `slate extend <id> <days>`, `slate delete <id>`, `slate tp <ticket> [svc]`, `slate tpa`
 Depends on: External tools (`scli`, `kubectl`, `telepresence`)
+
+### databricks.sh
+Purpose: Mint a short-lived Databricks PAT for omp (and opt-in non-CLI tools)
+Examples: `dbx-pat` (env overrides: `PAT_LIFETIME_SECONDS`, `DATABRICKS_PROFILE`); `source ~/.databricks-pat.env` for dbt/JDBC
+Depends on: External tools (`databricks`, `jq`); writes `DATABRICKS_OMP_API_KEY` to `~/.omp/agent/.env` (omp loads on startup); the Databricks CLI uses profile OAuth, not this PAT
 
 ## 5. Migration (Monolithic → Modular)
 
