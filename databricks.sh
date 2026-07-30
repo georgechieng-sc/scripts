@@ -3,10 +3,10 @@
 # =============================================================================
 # DATABRICKS PAT FUNCTIONS (sourced)
 # =============================================================================
-# Mint a short-lived Databricks PAT for omp and opt-in tooling.
+# Mint a long-lived Databricks PAT for omp and opt-in tooling.
 #
 # What `dbx-pat` does:
-#   - mints a Databricks PAT (default 24h) via your Databricks CLI profile
+#   - mints a Databricks PAT (default 730d) via your Databricks CLI profile
 #   - writes DATABRICKS_OMP_API_KEY to ~/.omp/agent/.env (omp loads this on startup)
 #   - writes DATABRICKS_TOKEN to ~/.databricks-pat.env for opt-in `source` (dbt/JDBC)
 #   - revokes the previously-minted PAT
@@ -14,7 +14,7 @@
 # This PAT exists solely for omp (and any non-CLI tool you point at it). The
 # Databricks CLI authenticates via profile OAuth (`auth_type = databricks-cli`
 # in ~/.databrickscfg) and does NOT use this PAT, so it is never exported into
-# the shell — that would only shadow the CLI's own auth with a 24h-dying token.
+# the shell — that would only shadow the CLI's own auth with a dying token.
 #
 # omp reads the provider apiKey from ~/.omp/agent/.env (its own env var,
 # DATABRICKS_OMP_API_KEY), which models.yml references by env-name. This keeps
@@ -22,14 +22,14 @@
 # other.
 #
 # Usage:
-#   dbx-pat                      # mint with defaults
-#   PAT_LIFETIME_SECONDS=43200 dbx-pat
+#   dbx-pat                      # mint with defaults (730 days)
+#   PAT_LIFETIME_SECONDS=86400 dbx-pat   # override (e.g. 24h)
 #   DATABRICKS_PROFILE=<name> dbx-pat
 #   source ~/.databricks-pat.env # opt-in: load PAT as DATABRICKS_TOKEN for dbt/JDBC
 
 DBX_WORKSPACE="${DATABRICKS_HOST:-https://safetyculture-safetyculture-production.cloud.databricks.com}"
 DBX_WORKSPACE="${DBX_WORKSPACE%/}"
-DBX_PAT_LIFETIME_SECONDS="${PAT_LIFETIME_SECONDS:-86400}"
+DBX_PAT_LIFETIME_SECONDS="${PAT_LIFETIME_SECONDS:-63072000}"
 DBX_PAT_COMMENT="coding-agents (dbx-pat)"
 DBX_PAT_ID_FILE="$HOME/.databricks-pat.id"
 DBX_OMP_ENV_FILE="$HOME/.omp/agent/.env"
@@ -48,7 +48,11 @@ dbx-pat() {
   local profile; profile="$(_dbx_resolve_profile)"
   [[ -n "$profile" ]] || { echo -e "${RED}ERROR: no Databricks profile for $DBX_WORKSPACE${RESET} (set DATABRICKS_PROFILE)" >&2; return 1; }
 
-  echo "Minting PAT (lifetime $((DBX_PAT_LIFETIME_SECONDS/3600))h) via profile '$profile'..."
+  if (( DBX_PAT_LIFETIME_SECONDS >= 172800 )); then
+    echo "Minting PAT (lifetime $((DBX_PAT_LIFETIME_SECONDS/86400))d) via profile '$profile'..."
+  else
+    echo "Minting PAT (lifetime $((DBX_PAT_LIFETIME_SECONDS/3600))h) via profile '$profile'..."
+  fi
   local resp pat new_id
   resp="$(databricks tokens create --comment "$DBX_PAT_COMMENT" \
             --lifetime-seconds "$DBX_PAT_LIFETIME_SECONDS" --profile "$profile" --output json)" \
