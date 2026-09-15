@@ -65,7 +65,7 @@ if [[ "$VERBOSE" == "true" ]]; then
     echo "📋 Available function categories:"
     echo "   • Installation: install-hb, install-omzsh, install-deps, set-kubeconf"
     echo "   • Git Workflow: branch, pr, gacp, gbi, gbdi"
-    echo "   • JIRA: sync_board, jbr, mvj, jdiff"
+    echo "   • JIRA: sync_board, jbr, jdiff"
     echo "   • Repository: repo, grc"
     echo "   • PR Review: stamp, prd, rr, review"
     echo "   • Utilities: cleanpipe, timezsh, giffy, cdi, sci"

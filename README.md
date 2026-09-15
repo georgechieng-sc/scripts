@@ -30,8 +30,6 @@ scripts/
 ├── slate.sh                # Slate environment management
 ├── databricks.sh           # Databricks PAT minting for omp + CLI
 ├── specialized.sh          # Focused one-off utilities
-└── prompts/
-    └── analyze_pull-request.md  # PR review prompt template (reference)
 ```
 
 ## 2. Quick Start
@@ -103,7 +101,7 @@ source "$HOME/scripts/jira.sh"
 
 ### constants.sh
 Purpose: Core constants + color codes
-Contains: `SAFETYCULTURE_DIR`, `SCRIPTS_DIR`, `PROMPTS_DIR`, ANSI colors
+Contains: `SAFETYCULTURE_DIR`, `SCRIPTS_DIR`, `JIRA_FILE_PREFIX`, ANSI colors
 
 ### aliases.sh
 Purpose: Frequently used shortcuts (reload, docker helpers, git helpers)
@@ -115,14 +113,14 @@ Use: Run functions manually; not auto-run to avoid unintended installs.
 
 ### utilities.sh
 Purpose: Shared helpers (input, selection, navigation, media conversion)
-Examples: `yesno`, `select_status`, `cleanpipe`, `giffy`, `cdi [dir]`, `sci [dir]`
+Examples: `select_status`, `cleanpipe`, `giffy`, `cdi [dir]`, `sci [dir]`
 Depends on: `constants.sh`
 
 ### git.sh
 Purpose: Git workflow acceleration
 Examples:
 - `branch <name>` — switch to main, pull, create branch, push
-- `pr [title] [merge_dest]` — create draft PR (`-v` to view existing)
+- `pr [--move-jira <status>] [--ready] [-t <title>] [-d <desc>]` — create draft PR (`-v` to view existing)
 - `gacp <message|flag>` — add, commit, push (flags: `-rri`, `-gmt`, `-gga`, `-gmm`, `-vb`, `-ut`, `-fmt`)
 - `gbi [branch]` — checkout branch (fzf if no arg)
 - `gbdi [branch]` — delete branch with JIRA/slate cleanup
@@ -133,8 +131,7 @@ Purpose: JIRA ticket integration
 Examples:
 - `sync_board [board]` — sync JIRA issues to local file
 - `jbr [ticket_id]` — create branch from ticket (fzf if no arg)
-- `mvj [ticket_id] [status]` — move ticket status (fzf/prompt if no args)
-- `jdiff <title> <description>` — create ticket, branch, commit, and PR
+- `jdiff -t <title> -d <description> -p <project> [--priority <priority>] [--type <type>]` — create ticket, branch, commit, and PR
 Depends on: `constants.sh`, `utilities.sh`
 
 ### repository.sh
@@ -201,7 +198,7 @@ Dependency Order: Loader enforces required order.
 Backward Compatibility: Interfaces mirror legacy script where feasible.
 Performance: Selective loading reduces shell startup time.
 Isolation: Source individual files to debug without full stack.
-Prompts: `prompts/analyze_pull-request.md` contains a PR review template for reference.
+Prompt Template: No bundled prompt templates; review prompts live outside this repo.
 Slate Environments: Require valid kubectl context & `scli` installed; failing context switches are warned, not fatal.
 Security: No secrets are stored in repo; ensure environment variables / credentials (AWS SSO) are managed externally.
 Idempotency: Loader can be safely re-sourced; installation functions intentionally not auto-invoked.

@@ -64,38 +64,6 @@ function jbr() {
 	fi
 }
 
-# Move JIRA ticket to different status
-# Usage: mvj <ticket_id|board_code> [status]
-# If a board code is given (no hyphen), fzf over that board's synced tickets.
-function mvj() {
-	local name="$1"
-	local pr_status="$2"
-
-	if [[ -z "$name" ]]; then
-		echo -e "${RED}ERROR: Ticket ID or board code required${RESET}"
-		echo "Usage: mvj <ticket_id|board_code> [status]"
-		return 1
-	fi
-
-	if [[ "$name" != *-* ]]; then
-		local board_lower=$(echo "$name" | tr '[:upper:]' '[:lower:]')
-		local board_file="${SCRIPTS_DIR}/${JIRA_FILE_PREFIX}${board_lower}.txt"
-		if [[ ! -f "$board_file" ]]; then
-			echo -e "${RED}ERROR: No synced tickets for board '$name'. Run: sync_board $name${RESET}"
-			return 1
-		fi
-		name="$(cat "$board_file" | fzf --cycle --color=dark | cut -f1 | xargs)"
-	fi
-
-	if [[ -n "$name" ]]; then
-		echo "moving JIRA ticket: $name"
-		if [[ -z "$pr_status" ]]; then
-			pr_status="$(select_status)"
-		fi
-		jira issue move "$name" "$pr_status"
-	fi
-}
-
 # Create JIRA ticket, branch, commit, and PR from current changes
 # Usage: jdiff -t <title> -d <description> -p <project> [--priority <priority>] [--type <type>]
 jdiff() {
