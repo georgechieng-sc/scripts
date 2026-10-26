@@ -95,7 +95,9 @@ review() {
   if [[ "$leave_comment" == true ]]; then
     echo "$review_output" | gh pr comment "$pr_url" --body-file -
     echo -e "${GREEN}Review comment posted to PR${RESET}"
-  else
+  elif command -v glow >/dev/null 2>&1; then
     echo "$review_output" | glow
+  else
+    echo "$review_output"
   fi
 }

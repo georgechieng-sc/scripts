@@ -61,7 +61,6 @@ Install (or verify) required tools.
 | gh | PR creation, diff, comments |
 | jira-cli | Ticket listing, moves, creation |
 | fzf | Interactive selection (branches/repos/tickets) |
-| glow | Markdown rendering for `review` |
 | md5sum (md5sha1sum) | Hashing inside `pw` |
 
 Without a valid SSO session, every EKS context fails with `executable aws failed` because kubeconfig calls `aws eks get-token`. Run `sc-auth` after a fresh login.
