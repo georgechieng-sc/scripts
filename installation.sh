@@ -16,8 +16,8 @@ install-deps() {
 	brew tap ankitpokhrel/jira-cli 
 	brew tap johanhaleby/kubetail
 	brew tap safetyculture/tap
-	brew install --cask macfuse	session-manager-plugin sublime-text	wombat docker
-	brew install awscli delve ffmpeg fzf gh gifsicle git-delta glow go jira-cli jq mkcert nvm pwgen python@3.11 scli staticcheck zsh-autosuggestions zsh-syntax-highlighting
+	brew install --cask macfuse	session-manager-plugin sublime-text	wombat
+	brew install awscli colima delve docker docker-buildx docker-compose ffmpeg fzf gh gifsicle git-delta glow go jira-cli jq mkcert nvm pwgen python@3.11 scli staticcheck zsh-autosuggestions zsh-syntax-highlighting
 }
 
 set-kubeconf() {

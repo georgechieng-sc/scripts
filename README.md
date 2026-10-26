@@ -103,6 +103,7 @@ Note: Available after sourcing loader; add new aliases here not inline in other 
 Purpose: Workstation setup (Homebrew, Oh My Zsh, CLI package set, EKS kubeconfig)
 Examples: `install-hb`, `install-omzsh`, `install-deps`, `set-kubeconf`
 Use: Not sourced by the loader. Source it only when you need it: `source "$HOME/Desktop/safetyculture/scripts/installation.sh"`
+Note: `install-deps` installs the `colima` VM plus the `docker` CLI, compose and buildx. It no longer installs the Docker Desktop cask.
 
 ### utilities.sh
 Purpose: Shared helpers (interactive directory navigation)
