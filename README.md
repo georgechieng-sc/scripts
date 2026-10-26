@@ -129,8 +129,6 @@ Purpose: Review, diff and approve PRs
 Examples:
 - `stamp` — approve PR from clipboard URL
 - `prd [url]` — show PR diff (clipboard if no arg)
-- `rr` — review then approve workflow
-- `review [-c] <text>` — post or preview review text (`-c` posts as PR comment)
 Depends on: `constants.sh`, `utilities.sh`
 
 ### specialized.sh

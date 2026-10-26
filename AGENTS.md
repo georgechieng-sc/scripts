@@ -42,8 +42,6 @@ Not sourced by the loader. Source it on demand: `source "$HOME/Desktop/safetycul
 |----------|-------|-------------|
 | `stamp` | `stamp` | Approve PR (URL from clipboard) |
 | `prd` | `prd <pr_url>` | Show PR diff |
-| `rr` | `rr [--approve] <pr_url>` | View PR details + diff. `--approve` auto-approves |
-| `review` | `review [-c] <review_text>` | Post or preview review. `-c` posts as PR comment (URL from clipboard) |
 
 ### Repository (repository.sh)
 

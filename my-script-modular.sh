@@ -62,7 +62,7 @@ if [[ "$VERBOSE" == "true" ]]; then
     echo "📋 Available function categories:"
     echo "   • Git Workflow: branch, pr, gacp, gbi, gbdi"
     echo "   • Repository: repo, grc"
-    echo "   • PR Review: stamp, prd, rr, review"
+    echo "   • PR Review: stamp, prd"
     echo "   • Utilities: cdi, sci"
     echo "   • Databricks: dbx-pat"
     echo "   • Specialized: s12id, ids12, pw"
