@@ -111,15 +111,13 @@ function gbi() {
 	git checkout "${1:-$(git branch | fzf | xargs)}"
 }
 
-# Git branch delete with optional JIRA/slate cleanup
-# Usage: gbdi [--delete-slate] [--move-done] [branch_name]
+# Git branch delete with optional JIRA cleanup
+# Usage: gbdi [--move-done] [branch_name]
 function gbdi() {
-	local delete_slate=false
 	local move_done=false
 
 	while [[ $# -gt 0 ]]; do
 		case $1 in
-			--delete-slate) delete_slate=true; shift ;;
 			--move-done) move_done=true; shift ;;
 			*) break ;;
 		esac
@@ -129,10 +127,6 @@ function gbdi() {
 
 	if [[ -n "$branch" ]]; then
 		gbd $branch
-
-		if [[ "$delete_slate" == true ]]; then
-			slate delete "$branch" || echo "WARN: slate delete failed" >&2
-		fi
 
 		if [[ "$move_done" == true ]]; then
 			local ticket_key="$(grep -oE '[A-Z]+-[0-9]+' <<< "$branch" | head -n 1)"

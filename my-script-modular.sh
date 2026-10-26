@@ -45,17 +45,14 @@ fi
 # Core modules (loaded first - no dependencies)
 source_script "constants.sh"        # Constants and color codes
 source_script "aliases.sh"          # All aliases
-source_script "installation.sh"     # Installation functions
 
 # Utility modules (depend on constants)
 source_script "utilities.sh"        # Utility functions
 
 # Feature modules (depend on utilities and constants)
 source_script "git.sh"              # Git workflow functions
-source_script "jira.sh"             # JIRA integration functions
 source_script "repository.sh"       # Repository management
 source_script "pr-review.sh"        # PR review workflow
-source_script "slate.sh"            # Slate management functions
 source_script "databricks.sh"      # Databricks PAT management
 source_script "specialized.sh"      # Specialized utility functions
 
@@ -63,14 +60,12 @@ if [[ "$VERBOSE" == "true" ]]; then
     echo "✨ All modules loaded successfully!"
     echo ""
     echo "📋 Available function categories:"
-    echo "   • Installation: install-hb, install-omzsh, install-deps, set-kubeconf"
     echo "   • Git Workflow: branch, pr, gacp, gbi, gbdi"
-    echo "   • JIRA: sync_board, jbr, jdiff"
     echo "   • Repository: repo, grc"
     echo "   • PR Review: stamp, prd, rr, review"
-    echo "   • Utilities: cleanpipe, timezsh, giffy, cdi, sci"
+    echo "   • Utilities: cdi, sci"
     echo "   • Databricks: dbx-pat"
-    echo "   • Specialized: s12id, ids12, pw, auto-sql"
+    echo "   • Specialized: s12id, ids12, pw"
     echo ""
     echo "💡 Tip: Each script can be sourced individually from the same directory"
 fi

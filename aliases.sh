@@ -6,9 +6,9 @@
 
 alias reload="exec zsh"
 alias hammer="reload && reset"
-alias pf="subl ~/.zshrc"
-alias gconf="subl ~/.gitconfig"
-alias hostfile="subl /etc/hosts"
+alias pf="code ~/.zshrc"
+alias gconf="code ~/.gitconfig"
+alias hostfile="code /etc/hosts"
 alias mysh="code -n ~/Desktop/safetyculture/scripts"
 
 alias ll="ls -la"
@@ -30,7 +30,6 @@ alias hide="defaults write com.apple.Finder AppleShowAllFiles false && killall F
 alias sc-ns="echo $DEV_GETNAMESPACE"
 alias sc-slns="echo $SLATE_GETNAMESPACE"
 alias sc-auth="aws sso login --profile sc-development"
-alias sc-slate="aws sso login --profile development-sc001"
 alias sc-change="kubectl config set-context --current --namespace "
 alias slated="kubectl config set-context --current --namespace default"
 alias tidepods="kubectl get pods"
@@ -40,18 +39,7 @@ alias kubedev="kubectl config use-context eks01-ap-southeast-2-development"
 alias brewdep="brew deps --tree --installed"
 alias portcheck="lsof -i"
 alias hack="code -n ."
-alias claude="claude"
 alias cleanslate="_ sudo rm -rf /private/var/log/asl/*.asl"
-
-# =============================================================================
-# ALIASES - DOCKER
-# =============================================================================
-
-alias docking="open -a Docker"
-alias dkc='docker ps -a -q'
-alias dki='docker image list -q'
-alias breakmirror='docker rmi $(dki)'
-alias sinkship='docker rm $(dkc)'
 
 # =============================================================================
 # ALIASES - GIT

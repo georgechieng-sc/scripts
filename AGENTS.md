@@ -1,6 +1,6 @@
 # SafetyCulture Development Scripts
 
-Custom shell functions for Git, JIRA, PR review, Slate, and utilities.
+Custom shell functions for Git, JIRA, PR review, and utilities.
 Located at `~/Desktop/safetyculture/scripts/`.
 
 ## How to call these functions
@@ -15,6 +15,17 @@ When args are provided, no TTY interaction is needed.
 
 ## Function Reference
 
+### Installation (installation.sh)
+
+Not sourced by the loader. Source it on demand: `source "$HOME/Desktop/safetyculture/scripts/installation.sh"`.
+
+| Function | Usage | Description |
+|----------|-------|-------------|
+| `install-hb` | `install-hb` | Install Homebrew via the official script |
+| `install-omzsh` | `install-omzsh` | Install Oh My Zsh |
+| `install-deps` | `install-deps` | Tap required repos and install the CLI package set |
+| `set-kubeconf` | `set-kubeconf` | Write the dev EKS kubeconfig entry (`sc-development`, ap-southeast-2) |
+
 ### Git (git.sh)
 
 | Function | Usage | Description |
@@ -22,16 +33,8 @@ When args are provided, no TTY interaction is needed.
 | `branch` | `branch <name>` | Switch to main, pull, create branch, push to remote |
 | `pr` | `pr [--move-jira <status>] [--ready] [-t <title>] [-d <desc>]` | Create draft PR. Title auto-prefixed with branch name (JIRA ticket included). `--move-jira "In Progress"` moves JIRA ticket. `--ready` marks PR as ready. `-v` views existing PR in browser |
 | `gbi` | `gbi <branch_name>` | Checkout branch |
-| `gbdi` | `gbdi [--delete-slate] [--move-done] <branch_name>` | Delete branch. `--delete-slate` removes slate instance. `--move-done` moves JIRA to Done |
+| `gbdi` | `gbdi [--move-done] <branch_name>` | Delete branch. `--move-done` moves JIRA to Done |
 | `gacp` | `gacp <message>` | Add, commit, push. Shorthand flags: `-rri` (remove redundant import), `-gmt` (go mod tidy), `-gga` (go get all), `-gmm` (merged main), `-vb` (version bump), `-ut` (updated unit tests), `-fmt` (formatted code) |
-
-### JIRA (jira.sh)
-
-| Function | Usage | Description |
-|----------|-------|-------------|
-| `sync_board` | `sync_board <board_code>` | Sync JIRA issues to local file. Pass any project code |
-| `jbr` | `jbr [--move-progress] <ticket_id\|board_code>` | Create branch from ticket. If a board code is passed, fzf over that board's synced tickets. `--move-progress` moves ticket to In Progress |
-| `jdiff` | `jdiff -t <title> -d <desc> -p <project> [--priority <priority>] [--type <type>]` | Full workflow: create JIRA ticket, branch, commit, and PR. Optional: `--priority`, `--type` |
 
 ### PR Review (pr-review.sh)
 
@@ -49,24 +52,10 @@ When args are provided, no TTY interaction is needed.
 | `repo` | `repo` | Sync SafetyCulture repo list to `repo.txt` |
 | `grc` | `grc` | Clone a repo interactively (fzf) |
 
-### Slate (slate.sh)
-
-| Function | Usage | Description |
-|----------|-------|-------------|
-| `slate up` | `slate up` | Initialize slate tooling |
-| `slate ls` | `slate ls` | List existing slates |
-| `slate extend` | `slate extend <id> <days>` | Extend slate expiry (1-7 days) |
-| `slate delete` | `slate delete <id>` | Delete a slate |
-| `slate tp` | `slate tp <ticket> [service]` | Deploy + intercept service |
-| `slate tpa` | `slate tpa` | Auto-detect ticket/service from branch + cwd |
-
 ### Utilities (utilities.sh)
 
 | Function | Usage | Description |
 |----------|-------|-------------|
-| `cleanpipe` | `cleanpipe <port>` | Kill processes on a port |
-| `timezsh` | `timezsh [shell]` | Benchmark shell startup (10 runs) |
-| `giffy` | `giffy <file.mov\|mp4>` | Convert video to optimized gif |
 | `cdi` | `cdi <dir_name>` | Change to directory |
 | `sci` | `sci <dir_name>` | cd to SafetyCulture dir, then into subdirectory |
 
@@ -77,7 +66,6 @@ When args are provided, no TTY interaction is needed.
 | `s12id` | `s12id <s12id_string>` | Convert S12ID to UUID format |
 | `ids12` | `ids12 <uuid> [prefix]` | Convert UUID to S12ID. Prefixes: `role`, `user`, `action`, `audit` |
 | `pw` | `pw [-s] <input>` | Generate password from seed. `-s` shows seed only |
-| `auto-sql` | `auto-sql` | Generate next SQL migration file (interactive — reads description from stdin) |
 
 ### Aliases (aliases.sh)
 

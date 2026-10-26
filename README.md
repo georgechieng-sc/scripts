@@ -2,7 +2,7 @@
 
 Modular shell tooling for daily development (Git, JIRA, repositories, PR review, utilities). Split into focused modules for faster load, easier maintenance and selective sourcing.
 
-All functions are LLM-friendly — interactive prompts (fzf, board/status selection) are bypassed when arguments are provided directly, making them callable from any LLM agent.
+All functions are LLM-friendly — interactive prompts (fzf) are bypassed when arguments are provided directly, making them callable from any LLM agent.
 
 ## Table of Contents
 1. Structure
@@ -21,13 +21,11 @@ scripts/
 ├── my-script-modular.sh    # Loader (sources modules in order)
 ├── constants.sh            # Shared constants + ANSI colors
 ├── aliases.sh              # Command aliases
-├── installation.sh         # Workstation setup helpers
+├── installation.sh         # Fresh-machine setup (source manually)
 ├── utilities.sh            # Cross-cutting utility functions
 ├── git.sh                  # Git workflow helpers
-├── jira.sh                 # JIRA integration
 ├── repository.sh           # Repository list + cloning helpers
 ├── pr-review.sh            # Pull request review helpers
-├── slate.sh                # Slate environment management
 ├── databricks.sh           # Databricks PAT minting for omp + CLI
 ├── specialized.sh          # Focused one-off utilities
 ```
@@ -50,29 +48,28 @@ exec zsh
 Verify:
 ```bash
 type branch       # from git.sh
-type jbr          # from jira.sh
+type gacp         # from git.sh
 type review       # from pr-review.sh
 ```
 
 ### Prerequisites
-Install (or verify) required tools. Most are bundled by `install-deps`.
+Install (or verify) required tools.
 
 | Tool | Why |
 |------|-----|
+| awscli | SSO login (`sc-auth`, `sc-slate`) and EKS token auth for every kubectl context |
 | gh | PR creation, diff, comments |
 | jira-cli | Ticket listing, moves, creation |
-| scli | Slate management |
-| kubectl | Kubernetes context + namespace for slate |
-| telepresence | Service interception for `tpa` |
 | fzf | Interactive selection (branches/repos/tickets) |
-| ffmpeg, gifsicle | Media conversion for `giffy` |
 | glow | Markdown rendering for `review` |
 | md5sum (md5sha1sum) | Hashing inside `pw` |
 
-Optional: ensure AWS SSO (`awscli`) installed for auth aliases.
+Without a valid SSO session, every EKS context fails with `executable aws failed` because kubeconfig calls `aws eks get-token`. Run `sc-auth` after a fresh login.
 
-Bulk install after sourcing loader:
+On a fresh machine, source `installation.sh` directly and run `install-deps` to get the whole package set; `set-kubeconf` writes the dev EKS context. The loader does not source this module.
+
 ```bash
+source "$HOME/Desktop/safetyculture/scripts/installation.sh"
 install-deps
 ```
 
@@ -90,11 +87,6 @@ Ensure `constants.sh` first, then any dependencies.
 source "$HOME/scripts/constants.sh"
 source "$HOME/scripts/utilities.sh"
 source "$HOME/scripts/git.sh"
-
-# JIRA only
-source "$HOME/scripts/constants.sh"
-source "$HOME/scripts/utilities.sh"
-source "$HOME/scripts/jira.sh"
 ```
 
 ## 4. Module Reference
@@ -108,12 +100,13 @@ Purpose: Frequently used shortcuts (reload, docker helpers, git helpers)
 Note: Available after sourcing loader; add new aliases here not inline in other modules.
 
 ### installation.sh
-Purpose: Workstation setup (Homebrew, Oh My Zsh, Kubernetes config, NVM)
-Use: Run functions manually; not auto-run to avoid unintended installs.
+Purpose: Workstation setup (Homebrew, Oh My Zsh, CLI package set, EKS kubeconfig)
+Examples: `install-hb`, `install-omzsh`, `install-deps`, `set-kubeconf`
+Use: Not sourced by the loader. Source it only when you need it: `source "$HOME/Desktop/safetyculture/scripts/installation.sh"`
 
 ### utilities.sh
-Purpose: Shared helpers (input, selection, navigation, media conversion)
-Examples: `select_status`, `cleanpipe`, `giffy`, `cdi [dir]`, `sci [dir]`
+Purpose: Shared helpers (interactive directory navigation)
+Examples: `cdi [dir]`, `sci [dir]`
 Depends on: `constants.sh`
 
 ### git.sh
@@ -123,15 +116,7 @@ Examples:
 - `pr [--move-jira <status>] [--ready] [-t <title>] [-d <desc>]` — create draft PR (`-v` to view existing)
 - `gacp <message|flag>` — add, commit, push (flags: `-rri`, `-gmt`, `-gga`, `-gmm`, `-vb`, `-ut`, `-fmt`)
 - `gbi [branch]` — checkout branch (fzf if no arg)
-- `gbdi [branch]` — delete branch with JIRA/slate cleanup
-Depends on: `constants.sh`, `utilities.sh`
-
-### jira.sh
-Purpose: JIRA ticket integration
-Examples:
-- `sync_board [board]` — sync JIRA issues to local file
-- `jbr [ticket_id]` — create branch from ticket (fzf if no arg)
-- `jdiff -t <title> -d <description> -p <project> [--priority <priority>] [--type <type>]` — create ticket, branch, commit, and PR
+- `gbdi [branch]` — delete branch with JIRA cleanup
 Depends on: `constants.sh`, `utilities.sh`
 
 ### repository.sh
@@ -149,14 +134,9 @@ Examples:
 Depends on: `constants.sh`, `utilities.sh`
 
 ### specialized.sh
-Purpose: Niche utilities (ID conversion, password generation, SQL file scaffolding)
-Examples: `s12id <id>`, `ids12 <uuid> [prefix]`, `pw [-s] [input]`, `auto-sql`
+Purpose: Niche utilities (ID conversion, password generation)
+Examples: `s12id <id>`, `ids12 <uuid> [prefix]`, `pw [-s] [input]`
 Depends on: `constants.sh`
-
-### slate.sh
-Purpose: Ephemeral environment ("slate") lifecycle + Kubernetes context helpers
-Examples: `slate up`, `slate ls`, `slate extend <id> <days>`, `slate delete <id>`, `slate tp <ticket> [svc]`, `slate tpa`
-Depends on: External tools (`scli`, `kubectl`, `telepresence`)
 
 ### databricks.sh
 Purpose: Mint a short-lived Databricks PAT for omp (and opt-in non-CLI tools)
@@ -179,10 +159,10 @@ source "$HOME/scripts/my-script-modular.sh"
 ## 6. Development Guidelines
 
 ### Add a Function
-1. Pick module matching responsibility (Git, JIRA, etc.)
+1. Pick module matching responsibility (Git, repository, etc.)
 2. Require only necessary dependencies (source order matters)
 3. Keep naming consistent and short (`verbNoun` where helpful)
-4. Accept arguments directly to keep functions LLM-callable — fall back to interactive prompts (fzf, `select_*`) only when no args are given
+4. Accept arguments directly to keep functions LLM-callable — fall back to interactive prompts (fzf) only when no args are given
 5. Append description to this README if user-facing
 6. Test standalone: source required modules then call function
 
@@ -199,9 +179,8 @@ Backward Compatibility: Interfaces mirror legacy script where feasible.
 Performance: Selective loading reduces shell startup time.
 Isolation: Source individual files to debug without full stack.
 Prompt Template: No bundled prompt templates; review prompts live outside this repo.
-Slate Environments: Require valid kubectl context & `scli` installed; failing context switches are warned, not fatal.
 Security: No secrets are stored in repo; ensure environment variables / credentials (AWS SSO) are managed externally.
-Idempotency: Loader can be safely re-sourced; installation functions intentionally not auto-invoked.
+Idempotency: Loader can be safely re-sourced; no function runs on load.
 Extensibility: Prefer adding new shared helpers to `utilities.sh` to avoid duplication.
 
 ## 8. Troubleshooting
@@ -230,15 +209,6 @@ source "$HOME/scripts/my-script-modular.sh"
 
 ### Shell Init Not Applying
 Ensure the sourcing line is at end of `~/.zshrc` and no earlier `return` statements are short-circuiting.
-
-### Slate Fails to Initialize
-1. Confirm `scli` login (`sc-auth` / `sc-slate`).
-2. Verify kubectl context via `kubectl config current-context`.
-
-### Telepresence Not Connecting
-1. Run `telepresence quit -s` before `tpa`.
-2. Verify Kubernetes context via `kubectl config current-context`.
-3. Check port conflicts with `cleanpipe <port>`.
 
 ## License / Usage
 Internal tooling; adjust before external distribution. Remove organization-specific paths or secrets before sharing.

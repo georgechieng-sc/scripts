@@ -94,30 +94,3 @@ function pw() {
 	fi
 }
 
-# Auto-generate SQL migration file
-# Usage: auto-sql
-function auto-sql() {
-	local latest_file="$(ls ./V[0-9]*__*.sql 2>/dev/null | sort -V | tail -n 1)"
-
-	if [[ -z "$latest_file" ]]; then
-	  echo "⚠️ No existing migrations found. Exiting."
-	  return 1
-	fi
-
-	local latest_version="$(basename "$latest_file" | sed -E 's/^V([0-9]+)__.*/\1/')"
-	local next_version=$((latest_version + 1))
-	
-	echo "📌 Latest version: V${latest_version}"
-
-	echo -n "📄 Enter migration description (use_underscores): "
-	read DESC
-
-	if [[ -z "$DESC" ]]; then
-	  echo "❌ Description cannot be empty. Exiting."
-	  return 1
-	fi
-
-	local filename="V${next_version}__${DESC}.sql"
-	touch "$filename"
-	echo "Created: $filename"
-}

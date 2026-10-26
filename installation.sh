@@ -21,5 +21,5 @@ install-deps() {
 }
 
 set-kubeconf() {
-	aws eks update-kubeconfig --name "eks01-ap-southeast-2-development" --alias "eks01-ap-southeast-2-development" --profile "sc-development" --region "ap-southeast-2"
+	aws eks update-kubeconfig --name "eks01-ap-southeast-2-development-sc001" --alias "eks01-ap-southeast-2-development-sc001" --profile "sc-development" --region "ap-southeast-2"
 }
